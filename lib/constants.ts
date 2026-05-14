@@ -49,3 +49,18 @@ export const TAGS = {
 export const HIDDEN_PRODUCT_TAG = "nextjs-frontend-hidden";
 export const DEFAULT_OPTION = "Default Title";
 export const SHOPIFY_GRAPHQL_API_ENDPOINT = "/api/2023-01/graphql.json";
+
+/** Read at call time so production env (e.g. Vercel) is applied, not only build-time values. */
+export function getShopifyHomeFeaturedCollectionHandle(): string {
+  return (
+    process.env.SHOPIFY_HOME_FEATURED_COLLECTION_HANDLE?.trim() ||
+    "hidden-homepage-featured-items"
+  );
+}
+
+export function getShopifyHomeCarouselCollectionHandle(): string {
+  return (
+    process.env.SHOPIFY_HOME_CAROUSEL_COLLECTION_HANDLE?.trim() ||
+    "hidden-homepage-carousel"
+  );
+}

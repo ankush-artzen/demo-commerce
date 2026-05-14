@@ -122,6 +122,12 @@ export async function shopifyFetch<T>({
   }
 }
 
+export function filterProductsWithFeaturedImage(
+  products: Product[],
+): Product[] {
+  return products.filter((p) => p.featuredImage?.url);
+}
+
 const removeEdgesAndNodes = <T>(array: Connection<T>): T[] => {
   return array.edges.map((edge) => edge?.node);
 };

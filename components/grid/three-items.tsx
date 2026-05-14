@@ -1,5 +1,10 @@
 import { GridTileImage } from "components/grid/tile";
-import { getCollectionProducts } from "lib/shopify";
+import { getShopifyHomeFeaturedCollectionHandle } from "lib/constants";
+import {
+  filterProductsWithFeaturedImage,
+  getCollectionProducts,
+  getProducts,
+} from "lib/shopify";
 import type { Product } from "lib/shopify/types";
 import Link from "next/link";
 
@@ -48,10 +53,27 @@ function ThreeItemGridItem({
 }
 
 export async function ThreeItemGrid() {
-  // Collections that start with `hidden-*` are hidden from the search page.
-  const homepageItems = await getCollectionProducts({
-    collection: "hidden-homepage-featured-items",
-  });
+  let homepageItems = filterProductsWithFeaturedImage(
+    await getCollectionProducts({
+      collection: getShopifyHomeFeaturedCollectionHandle(),
+    }),
+  );
+
+  if (homepageItems.length < 3) {
+    try {
+      const pool = filterProductsWithFeaturedImage(await getProducts({}));
+      const seen = new Set(homepageItems.map((p) => p.id));
+      for (const p of pool) {
+        if (homepageItems.length >= 3) break;
+        if (!seen.has(p.id)) {
+          seen.add(p.id);
+          homepageItems.push(p);
+        }
+      }
+    } catch {
+      /* Shopify misconfigured or API error */
+    }
+  }
 
   if (!homepageItems[0] || !homepageItems[1] || !homepageItems[2]) return null;
 
