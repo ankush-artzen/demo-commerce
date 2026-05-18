@@ -12,7 +12,7 @@ export default function WholesalePage() {
     <div className="w-full bg-white text-black">
       {/* Hero Section */}
       <section className="relative overflow-hidden border-b border-black">
-        <div className="absolute right-10 top-10 opacity-20">
+        {/* <div className="absolute right-10 top-10 opacity-20">
           <Image
             src="/images/unnamed.jpg"
             alt=""
@@ -21,7 +21,7 @@ export default function WholesalePage() {
             className="object-cover"
             priority
           />
-        </div>
+        </div> */}
 
         <div className="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-6 py-20 lg:grid-cols-2 lg:px-12">
           {/* Left Content */}
