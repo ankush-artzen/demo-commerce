@@ -2,6 +2,7 @@
 
 "use client";
 
+import Footer from "components/layout/footer";
 import { ChevronDown } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
@@ -551,91 +552,7 @@ export default function FAQPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="relative overflow-hidden">
-        {/* <div className="absolute right-8 top-8 opacity-20">
-          <Image
-            src="/3 dots 2.svg"
-            alt="Decorative Dots"
-            width={120}
-            height={120}
-          />
-        </div> */}
-
-        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-16 px-6 py-24 md:grid-cols-4 md:px-12">
-          {/* About */}
-          <div className="md:col-span-1">
-            <h3 className="mb-6 text-2xl font-light">April Coffee</h3>
-
-            <p className="text-sm leading-7 text-neutral-600">
-              April is a coffee roastery, rooted in Denmark with the vision to
-              progress the way we roast coffee.
-            </p>
-
-            <p className="mt-6 text-sm leading-7 text-neutral-600">
-              We believe that where you are matters. It shapes you as a person
-              and a company, that is why we are in Copenhagen.
-            </p>
-
-            <p className="mt-6 text-sm leading-7 text-neutral-600">
-              At April we focus on roasting coffee. That is what we do. It’s our
-              profession and our passion.
-            </p>
-          </div>
-
-          {/* Shop */}
-          <div>
-            <h4 className="mb-6 text-lg font-medium">Shop</h4>
-
-            <ul className="space-y-4 text-sm text-neutral-600">
-              <li>New Arrivals</li>
-              <li>Sustainable Profile Coffee</li>
-              <li>April Filter Selection</li>
-              <li>April Espresso Selection</li>
-              <li>April Limited Selection</li>
-            </ul>
-          </div>
-
-          {/* Useful Links */}
-          <div>
-            <h4 className="mb-6 text-lg font-medium">Useful Links</h4>
-
-            <ul className="space-y-4 text-sm text-neutral-600">
-              <li>About Us</li>
-              <li>FAQ</li>
-              <li>Brewing Recipes</li>
-              <li>April Brewers Cup</li>
-            </ul>
-          </div>
-
-          {/* Follow */}
-          <div>
-            <h4 className="mb-6 text-lg font-medium">Follow us</h4>
-
-            <ul className="space-y-4 text-sm text-neutral-600">
-              <li>Find us on Facebook</li>
-              <li>Find us on Instagram</li>
-              <li>Find us on Youtube</li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="border-t border-black px-6 py-8 md:px-12">
-          <div className="mx-auto flex max-w-7xl flex-col gap-4 text-sm text-neutral-600 md:flex-row md:items-center md:justify-between">
-            <div className="flex flex-wrap gap-6">
-              <span>FAQ's</span>
-              <span>Terms of Service</span>
-              <span>Smiley</span>
-              <span>Privacy Policy</span>
-              <span>About April</span>
-              <span>Wholesale registration</span>
-              <span>Shipping terms</span>
-            </div>
-
-            <p>Copyright © 2026 April Coffee Roasters.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </main>
   );
 }

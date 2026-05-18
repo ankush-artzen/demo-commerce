@@ -1,3 +1,4 @@
+import Footer from "components/layout/footer";
 import Image from "next/image";
 
 export const metadata = {
@@ -228,6 +229,7 @@ export default function WholesalePage() {
           </form>
         </div>
       </section>
+      <Footer />
     </div>
   );
 }

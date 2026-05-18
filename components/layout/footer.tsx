@@ -199,7 +199,53 @@ export default function Footer() {
       </div>
 
       {/* Bottom */}
+      {/* Bottom */}
       <div className="border-t border-neutral-200 dark:border-neutral-800">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-6 py-6 text-sm text-neutral-500 md:flex-row dark:text-neutral-400">
+          <p>
+            © {new Date().getFullYear()} {COMPANY_NAME}. All rights reserved.
+          </p>
+
+          <div className="flex flex-wrap items-center gap-6 uppercase tracking-wide">
+            <Link
+              href="/contact"
+              className="hover:text-black dark:hover:text-white"
+            >
+              Contact
+            </Link>
+
+            <Link
+              href="/wholesale"
+              className="hover:text-black dark:hover:text-white"
+            >
+              Wholesale
+            </Link>
+
+            <Link
+              href="/faq"
+              className="hover:text-black dark:hover:text-white"
+            >
+              Customer Support
+            </Link>
+
+            <Link
+              href="/recipes"
+              className="hover:text-black dark:hover:text-white"
+            >
+              Recipes
+            </Link>
+
+            <Link
+              href="https://www.youtube.com/@CoffeewithApril"
+              target="_blank"
+              className="hover:text-black dark:hover:text-white"
+            >
+              YouTube
+            </Link>
+          </div>
+        </div>
+      </div>
+      {/* <div className="border-t border-neutral-200 dark:border-neutral-800">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-6 py-6 text-sm text-neutral-500 md:flex-row dark:text-neutral-400">
           <p>
             © {new Date().getFullYear()} {COMPANY_NAME}. All rights reserved.
@@ -219,7 +265,7 @@ export default function Footer() {
             </Link>
           </div>
         </div>
-      </div>
+      </div> */}
     </footer>
   );
 }
