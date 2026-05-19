@@ -5,7 +5,7 @@ import ShopPage from "../../../../components/store/shop-page";
 export default function Page() {
   return (
     <ShopPage
-      name="New York Shop"
+      name="Apgujeong Shop"
       image="/images/new-york-1.avif"
       address={[
         "17 Apgujeong-Ro 50-Gil",

@@ -225,7 +225,7 @@ export default function Header() {
             <img
               src="/images/april_logo.webp"
               alt="Logo"
-              className="w-[110px]"
+              className="w-[110px] sm:gap:12 gap-0"
             />
           </Link>
         </div>

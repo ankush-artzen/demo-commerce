@@ -5,13 +5,14 @@ import ShopPage from "../../../../components/store/shop-page";
 export default function Page() {
   return (
     <ShopPage
-      name="New York Shop"
-      image="/images/new-york-1.avif"
+      name="Tokyo Shop"
+      image="/images/tokyo-1.avif"
       address={[
-        "49 Howard Street",
-        "New York, NY 10013",
-        "212-933-1573",
-        "Mon-Sat: 11-7 Sun: 12-6",
+        "5-9-20 Jingumae",
+        "Shibuya-Ku",
+        "Tokyo 150-0001",
+        "03-6427-2587",
+        "Mon-Fri: 12-8 Sat: 11-8 Sun: 12-7",
       ]}
     />
   );

@@ -5,13 +5,13 @@ import ShopPage from "../../../../components/store/shop-page";
 export default function Page() {
   return (
     <ShopPage
-      name="London Shop"
-      image="/images/london-1.avif"
+      name="DSM LA Concession"
+      image="/images/dsmla.avif"
       address={[
-        "26 Brewer Street",
-        "London W1F 0SW",
-        "020 7287 5048",
-        "Mon-Sat: 11-7 Sun: 12-6",
+        "608 Imperial St",
+        "Los Angeles, CA 90021",
+        "310-427-7610",
+        "Mon-Sat: 11-6 Sun: 12-5",
       ]}
     />
   );
