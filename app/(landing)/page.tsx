@@ -7,12 +7,12 @@ const logos = [
   {
     image: "/images/red.png",
     title: "SHOPS",
-    link: "/search",
+    link: "/shops",
   },
   {
     image: "/images/white.png",
     title: "WEB SHOP",
-    link: "/search/automated-collection",
+    link: "/shops",
   },
   {
     image: "/images/blue.png",
