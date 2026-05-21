@@ -1,7 +1,9 @@
 "use client";
 
+import Header from "components/store/header";
 import Image from "next/image";
 import Link from "next/link";
+import Footer from "../../components/store/footer";
 
 const logos = [
   {
@@ -17,12 +19,12 @@ const logos = [
   {
     image: "/images/blue.png",
     title: "SUMMER 2026 RANGE",
-    link: "/search/hydrogen",
+    link: "advice/palace-shanghai",
   },
   {
     image: "/images/black.png",
     title: "ADVICE",
-    link: "#",
+    link: "/search/hydrogen",
   },
   {
     image: "/images/green.png",
@@ -31,23 +33,15 @@ const logos = [
   },
 ];
 
-const footerLinks = [
-  "INSTAGRAM",
-  "TIKTOK",
-  "APPLE MUSIC",
-  "YOUTUBE",
-  "WECHAT",
-  "WEIBO",
-  "MAILING LIST",
-  "BORING STUFF",
-];
-
 export default function PalaceLandingPage() {
   return (
     <>
-      <div className="flex flex-1 flex-col mb-0  sm:mb-10 overflow-hidden">
-        <div className="flex flex-1 items-center justify-center px-4 py-10 md:py-20">
-          <div className="flex w-full flex-col items-center gap-4 px-2 md:flex-row md:items-center md:justify-center md:gap-0 md:px-4 lg:px-6">
+      <div className="sm:hidden">
+        <Header />
+      </div>
+      <div className="flex flex-1 flex-col mt-6 overflow-hidden">
+        <div className="flex flex-1 items-center justify-center px-4 py-0 md:py-20">
+          <div className="flex w-full flex-col items-center p-4 gap-0 mb-8 sm:mb-0 sm:gap-4 px-2 md:flex-row md:items-center md:justify-center md:gap-0 md:px-4 lg:px-6">
             {logos.map((item, index) => (
               <Link
                 key={index}
@@ -64,7 +58,30 @@ export default function PalaceLandingPage() {
                   priority
                   className="h-auto w-[120px] object-contain transition-opacity duration-300 select-none group-hover:opacity-20 sm:w-[140px] md:w-[180px] lg:w-[210px] xl:w-[230px]"
                 /> */}
+
                 <Image
+                  src={item.image}
+                  alt={item.title}
+                  width={200}
+                  height={200}
+                  priority
+                  className="
+    h-auto
+    w-[122px]
+    object-contain
+    transition-opacity
+    duration-300
+    select-none
+    group-hover:opacity-20
+
+    sm:w-[130px]
+    md:w-[165px]
+    lg:w-[190px]
+    xl:w-[205px]
+  "
+                />
+
+                {/* <Image
                   src={item.image}
                   alt={item.title}
                   width={200}
@@ -84,7 +101,7 @@ export default function PalaceLandingPage() {
     lg:w-[190px]
     xl:w-[205px]
   "
-                />
+                /> */}
 
                 <span className="mt-2 block text-center text-[11px] leading-none font-black tracking-[-0.05em] text-black uppercase md:hidden">
                   {item.title}
@@ -100,11 +117,12 @@ export default function PalaceLandingPage() {
           </div>
         </div>
       </div>
+      <Footer />
 
       {/* <footer className="mt-auto w-full px-6 pb-8 md:pb-10"> */}
-      <footer className="w-full mt:0 sm:mt-28 px-6 pb-7 md:pb-7 md:absolute md:bottom-0 md:left-0">
+      {/* <footer className="w-full mt:0 sm:mt-28 px-6 pb-7 md:pb-7 md:absolute md:bottom-0 md:left-0">
         {/* <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-center text-[9px] font-black tracking-[-0.04em] uppercase sm:text-[10px] md:flex md:flex-wrap md:items-center md:justify-center md:gap-x-6 md:gap-y-3 md:text-[11px] lg:text-[12px]"> */}
-        <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-center text-[9px] font-bold tracking-[-0.05em] uppercase sm:text-[7px] md:flex md:flex-wrap md:items-center md:justify-center md:gap-x-5 md:gap-y-3 md:text-[11.7px] lg:text-[11.7px]">
+      {/* <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-center text-[9px] font-bold tracking-[-0.05em] uppercase sm:text-[7px] md:flex md:flex-wrap md:items-center md:justify-center md:gap-x-5 md:gap-y-3 md:text-[11.7px] lg:text-[11.7px]">
           {" "}
           {footerLinks.map((item, index) => (
             <button
@@ -115,7 +133,7 @@ export default function PalaceLandingPage() {
             </button>
           ))}
         </div>
-      </footer>
+      </footer>  */}
     </>
   );
 }

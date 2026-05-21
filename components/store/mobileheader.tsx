@@ -33,81 +33,53 @@ function PalaceLogo() {
   );
 }
 
-function menuItemTestId(label: string) {
-  return `menu-item-${label.toLowerCase()}`;
-}
-
-type HeaderProps = {
-  landing?: boolean;
-};
-
-export default function Header({ landing = false }: HeaderProps) {
+export default function HeaderMobile() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <>
+      {/* MOBILE HEADER ONLY */}
       <header
-        aria-label="header"
-        className={`flex min-h-24 justify-center uppercase phone:min-h-20 ${
-          landing
-            ? "tablet:invisible tablet:hidden desktop:invisible desktop:hidden"
-            : ""
-        }`}
+        aria-label="mobile-header"
+        className="flex min-h-20 justify-center uppercase tablet:hidden desktop:hidden"
       >
-        <div className="mx-5 mt-3.5 flex w-full max-w-5xl items-start phone:items-center phone:mt-1.5 phone:mb-2.5">
+        <div className="mx-5 mt-2 flex w-full items-center">
+          {/* LOGO */}
           <Link href="/" aria-label="palace-logo">
             <div
-              className="block w-44 transition-opacity duration-150 ease-in-out hover:opacity-25"
+              className="block w-32 transition-opacity duration-150 ease-in-out hover:opacity-25"
               aria-label="logo"
             >
               <PalaceLogo />
             </div>
           </Link>
 
-          <nav className="header-main-nav">
-            {navItems.map((item) => (
-              <h1 key={item.href} className="header-nav-item">
-                {"external" in item && item.external ? (
-                  <a href={item.href} target="_blank" rel="noreferrer">
-                    {item.label}
-                  </a>
-                ) : (
-                  <Link href={item.href}>{item.label}</Link>
-                )}
-              </h1>
-            ))}
-          </nav>
-
+          {/* HAMBURGER */}
           <button
             type="button"
-            className="ml-auto pl-2.5 tablet:invisible tablet:hidden desktop:invisible desktop:hidden"
+            className="ml-auto"
             aria-label="mobile-menu-btn"
-            id="mobile-menu-btn"
-            data-menu-open={menuOpen ? "true" : "false"}
             onClick={() => setMenuOpen((open) => !open)}
           >
-            <div
-              className="group right-0 flex flex-col mr-0 h-5"
-              aria-label="hamburger-button"
-            >
-              <div className="pb-0.5 w-[22px] my-[2.5px] bg-black transition ease-in-out transform duration-200 group-hover:opacity-100" />
-              <div className="pb-0.5 w-[22px] my-[2.5px] bg-black transition ease-in-out transform duration-200 group-hover:opacity-100" />
-              <div className="pb-0.5 w-[22px] my-[2.5px] bg-black transition ease-in-out transform duration-200 group-hover:opacity-100" />
+            <div className="flex flex-col h-5 justify-between">
+              <span className="block h-[2px] w-[22px] bg-black" />
+              <span className="block h-[2px] w-[22px] bg-black" />
+              <span className="block h-[2px] w-[22px] bg-black" />
             </div>
           </button>
         </div>
       </header>
 
+      {/* MOBILE MENU */}
       <nav
-        id="mobile-menu"
         aria-label="mobile-menu"
-        className={`fixed z-20 mt-20 size-full w-full bg-white px-5 uppercase duration-300 ease-out tablet:invisible tablet:hidden desktop:invisible desktop:hidden ${
-          menuOpen ? "translate-x-0" : "phone:translate-x-full"
+        className={`fixed top-0 left-0 z-50 h-screen w-full bg-white px-5 pt-24 uppercase transition-transform duration-300 tablet:hidden desktop:hidden ${
+          menuOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <ul>
+        <ul className="space-y-2">
           {navItems.map((item) => (
-            <li key={item.href} data-testid={menuItemTestId(item.label)}>
+            <li key={item.href}>
               {"external" in item && item.external ? (
                 <a
                   href={item.href}

@@ -12,6 +12,11 @@ export default {
         hostname: "cdn.shopify.com",
         pathname: "/s/files/**",
       },
+      {
+        protocol: "https",
+        hostname: "www.datocms-assets.com",
+        pathname: "/**",
+      },
     ],
   },
 };

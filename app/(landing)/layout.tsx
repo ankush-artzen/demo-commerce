@@ -6,7 +6,10 @@ export const metadata = {
 
 export default function LandingLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen flex flex-col bg-white text-black">
+    <div
+      aria-label="layout"
+      className="flex min-h-dvh flex-col bg-white text-black"
+    >
       {children}
     </div>
   );
