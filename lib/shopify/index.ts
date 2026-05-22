@@ -1,4 +1,5 @@
 import {
+  COLLECTION_PRODUCTS_PAGE_SIZE,
   HIDDEN_PRODUCT_TAG,
   SHOPIFY_GRAPHQL_API_ENDPOINT,
   TAGS,
@@ -38,7 +39,9 @@ import {
   Image,
   Menu,
   Page,
+  PageInfo,
   Product,
+  ProductsPage,
   ShopifyAddToCartOperation,
   ShopifyCart,
   ShopifyCartOperation,
@@ -126,6 +129,27 @@ export function filterProductsWithFeaturedImage(
   products: Product[],
 ): Product[] {
   return products.filter((p) => p.featuredImage?.url);
+}
+
+export function filterVisibleCollectionProducts(
+  products: Product[],
+): Product[] {
+  return filterProductsWithFeaturedImage(
+    products.filter((product) => !product.tags.includes(HIDDEN_PRODUCT_TAG)),
+  );
+}
+
+function parseProductsConnection(connection: Connection<ShopifyProduct>): {
+  products: Product[];
+  pageInfo: PageInfo;
+} {
+  return {
+    products: reshapeProducts(removeEdgesAndNodes(connection)),
+    pageInfo: connection.pageInfo ?? {
+      hasNextPage: false,
+      endCursor: null,
+    },
+  };
 }
 
 const removeEdgesAndNodes = <T>(array: Connection<T>): T[] => {
@@ -340,6 +364,7 @@ export async function getCollectionProducts({
       handle: collection,
       reverse,
       sortKey: sortKey === "CREATED_AT" ? "CREATED" : sortKey,
+      first: 100,
     },
   });
 
@@ -349,7 +374,128 @@ export async function getCollectionProducts({
   }
 
   return reshapeProducts(
-    removeEdgesAndNodes(res.body.data.collection.products)
+    removeEdgesAndNodes(res.body.data.collection.products),
+  );
+}
+
+export async function getCollectionProductsPage({
+  collection,
+  reverse,
+  sortKey,
+  first = COLLECTION_PRODUCTS_PAGE_SIZE,
+  after,
+}: {
+  collection: string;
+  reverse?: boolean;
+  sortKey?: string;
+  first?: number;
+  after?: string | null;
+}): Promise<ProductsPage | null> {
+  if (!endpoint) {
+    return null;
+  }
+
+  const res = await shopifyFetch<ShopifyCollectionProductsOperation>({
+    query: getCollectionProductsQuery,
+    variables: {
+      handle: collection,
+      reverse,
+      sortKey: sortKey === "CREATED_AT" ? "CREATED" : sortKey,
+      first,
+      after: after ?? undefined,
+    },
+  });
+
+  if (!res.body.data.collection) {
+    return null;
+  }
+
+  const { products, pageInfo } = parseProductsConnection(
+    res.body.data.collection.products,
+  );
+
+  return {
+    products: filterVisibleCollectionProducts(products),
+    pageInfo,
+  };
+}
+
+export async function getProductsPage({
+  query,
+  reverse,
+  sortKey,
+  first = COLLECTION_PRODUCTS_PAGE_SIZE,
+  after,
+}: {
+  query?: string;
+  reverse?: boolean;
+  sortKey?: string;
+  first?: number;
+  after?: string | null;
+}): Promise<ProductsPage | null> {
+  if (!endpoint) {
+    return null;
+  }
+
+  const res = await shopifyFetch<ShopifyProductsOperation>({
+    query: getProductsQuery,
+    variables: {
+      query,
+      reverse,
+      sortKey,
+      first,
+      after: after ?? undefined,
+    },
+  });
+
+  const { products, pageInfo } = parseProductsConnection(
+    res.body.data.products,
+  );
+
+  return {
+    products: filterVisibleCollectionProducts(products),
+    pageInfo,
+  };
+}
+
+export async function loadCollectionProductsPage({
+  collection,
+  cursor,
+  first = COLLECTION_PRODUCTS_PAGE_SIZE,
+}: {
+  collection: string;
+  cursor?: string | null;
+  first?: number;
+}): Promise<ProductsPage> {
+  const sortKey = "CREATED_AT";
+  const reverse = true;
+
+  if (collection !== "all") {
+    const collectionPage = await getCollectionProductsPage({
+      collection,
+      sortKey,
+      reverse,
+      first,
+      after: cursor,
+    });
+
+    if (collectionPage) {
+      return collectionPage;
+    }
+  }
+
+  const productsPage = await getProductsPage({
+    sortKey,
+    reverse,
+    first,
+    after: cursor,
+  });
+
+  return (
+    productsPage ?? {
+      products: [],
+      pageInfo: { hasNextPage: false, endCursor: null },
+    }
   );
 }
 
@@ -502,6 +648,7 @@ export async function getProducts({
       query,
       reverse,
       sortKey,
+      first: 100,
     },
   });
 

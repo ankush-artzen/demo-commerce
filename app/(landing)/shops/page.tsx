@@ -219,7 +219,7 @@ export default function Page() {
                 aria-label={shop.title}
                 className="mb-2.5 px-2.5 max-md:mb-5 w-1/2 max-md:w-full"
               >
-                <div
+                {/* <div
                   className="
                     relative
                     h-80
@@ -239,7 +239,67 @@ export default function Page() {
 
                     // className="absolute inset-0 h-full w-full object-cover"
                   />
+                </div> */}
+
+                <div
+                  className="
+    relative
+    h-80
+    w-full
+    overflow-hidden
+    bg-[#e9e9e9]
+    duration-75
+    ease-in
+    hover:opacity-30
+    max-md:h-60
+  "
+                >
+                  <img
+                    src={shop.image}
+                    alt={shop.title}
+                    className="
+      absolute
+      inset-0
+      h-full
+      w-full
+      object-cover
+      opacity-100
+      transition-opacity
+      duration-500
+    "
+                  />
                 </div>
+
+                {/* <div
+                  className="
+    relative
+    h-80
+    overflow-hidden
+    bg-[#e9e9e9]
+    duration-75
+    ease-in
+    hover:opacity-30
+    max-md:h-60
+  "
+                >
+                  <img
+                    src={shop.image}
+                    alt={shop.title}
+                    className="
+      absolute
+      left-0
+      top-0
+      h-full
+      w-full
+      max-w-none
+      max-h-none
+      object-cover
+      opacity-100
+      transition-opacity
+      duration-500
+    "
+                  />
+                </div> */}
 
                 <h2
                   className="

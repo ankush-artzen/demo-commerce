@@ -1,139 +1,84 @@
-"use client";
-
-import Header from "components/store/header";
-import Image from "next/image";
+import { TriFergSvg } from "components/store/tri-ferg-svg";
 import Link from "next/link";
 import Footer from "../../components/store/footer";
 
-const logos = [
+const navItems = [
   {
-    image: "/images/red.png",
-    title: "SHOPS",
-    link: "/shops",
+    title: "Shops",
+    href: "/shops",
+    fillClass: "fill-tri-ferg-red",
+    ariaLabel: "shops-tri-ferg-link",
   },
   {
-    image: "/images/white.png",
-    title: "WEB SHOP",
-    link: "/shops",
+    title: "Web Shop",
+    href: "/collections/all",
+    fillClass: "fill-tri-ferg-grey",
+    ariaLabel: "web-shop-tri-ferg-link",
   },
   {
-    image: "/images/blue.png",
-    title: "SUMMER 2026 RANGE",
-    link: "advice/palace-shanghai",
+    title: "PALACE SHANGHAI",
+    href: "/advice/palace-shanghai",
+    fillClass: "fill-tri-ferg-blue",
+    ariaLabel: "latest-advice-tri-ferg-link",
   },
   {
-    image: "/images/black.png",
-    title: "ADVICE",
-    link: "/search/hydrogen",
+    title: "Advice",
+    href: "/advice",
+    fillClass: "",
+    ariaLabel: "advice-tri-ferg-link",
   },
   {
-    image: "/images/green.png",
-    title: "MANOR PLACE",
-    link: "#",
+    title: "Manor Place",
+    href: "https://manorplace.com",
+    fillClass: "fill-tri-ferg-lime-green",
+    ariaLabel: "manor-place-tri-ferg-link",
+    external: true,
   },
-];
+] as const;
 
 export default function PalaceLandingPage() {
   return (
     <>
-      <div className="sm:hidden">
-        <Header />
-      </div>
-      <div className="flex flex-1 flex-col mt-6 overflow-hidden">
-        <div className="flex flex-1 items-center justify-center px-4 py-0 md:py-20">
-          <div className="flex w-full flex-col items-center p-4 gap-0 mb-8 sm:mb-0 sm:gap-4 px-2 md:flex-row md:items-center md:justify-center md:gap-0 md:px-4 lg:px-6">
-            {logos.map((item, index) => (
-              <Link
-                key={index}
-                href={item.link}
-                target={item.link.startsWith("http") ? "_blank" : "_self"}
-                rel="noopener noreferrer"
-                className="group relative flex flex-col items-center justify-center"
-              >
-                {/* <Image
-                  src={item.image}
-                  alt={item.title}
-                  width={220}
-                  height={220}
-                  priority
-                  className="h-auto w-[120px] object-contain transition-opacity duration-300 select-none group-hover:opacity-20 sm:w-[140px] md:w-[180px] lg:w-[210px] xl:w-[230px]"
-                /> */}
-
-                <Image
-                  src={item.image}
-                  alt={item.title}
-                  width={200}
-                  height={200}
-                  priority
-                  className="
-    h-auto
-    w-[122px]
-    object-contain
-    transition-opacity
-    duration-300
-    select-none
-    group-hover:opacity-20
-
-    sm:w-[130px]
-    md:w-[165px]
-    lg:w-[190px]
-    xl:w-[205px]
-  "
-                />
-
-                {/* <Image
-                  src={item.image}
-                  alt={item.title}
-                  width={200}
-                  height={200}
-                  priority
-                  className="
-    h-auto
-    w-[110px]
-    object-contain
-    transition-opacity
-    duration-300
-    select-none
-    group-hover:opacity-20
-
-    sm:w-[130px]
-    md:w-[165px]
-    lg:w-[190px]
-    xl:w-[205px]
-  "
-                /> */}
-
-                <span className="mt-2 block text-center text-[11px] leading-none font-black tracking-[-0.05em] text-black uppercase md:hidden">
-                  {item.title}
-                </span>
-
-                <div className="pointer-events-none absolute inset-0 hidden items-center justify-center px-2 opacity-0 transition-opacity duration-300 group-hover:opacity-100 md:flex">
-                  <span className="text-center text-[16px] leading-none font-black tracking-[-0.05em] text-black uppercase lg:text-[18px] xl:text-[20px]">
+      <main
+        role="main"
+        id="mainContent"
+        className="flex flex-1 grow justify-center"
+      >
+        <div className="mx-5 flex w-full max-w-5xl">
+          <div
+            className="relative flex w-full flex-1 grow flex-col justify-center px-5 phone:px-0"
+            aria-label="index-view"
+          >
+            <nav className="flex flex-row justify-center space-x-10 pt-5 font-bold uppercase phone:flex-col phone:items-center phone:space-x-0 phone:space-y-2 phone:pt-0">
+              {navItems.map((item) => (
+                <Link
+                  key={item.ariaLabel}
+                  href={item.href}
+                  aria-label={item.ariaLabel}
+                  target={"external" in item && item.external ? "_blank" : undefined}
+                  rel={
+                    "external" in item && item.external
+                      ? "noopener noreferrer"
+                      : undefined
+                  }
+                  className={`group relative block w-56 phone:w-24 ${item.fillClass}`}
+                >
+                  <div
+                    className="w-full transition-opacity duration-150 ease-in-out desktop:group-hover:opacity-20"
+                    aria-label="tri-ferg"
+                  >
+                    <TriFergSvg />
+                  </div>
+                  <h2 className="text-center text-xl phone:mt-2 phone:text-xs tablet:text-md desktop:absolute desktop:inset-0 desktop:flex desktop:w-full desktop:items-center desktop:justify-center desktop:opacity-0 desktop:transition-opacity desktop:duration-150 desktop:ease-in-out desktop:group-hover:opacity-100">
                     {item.title}
-                  </span>
-                </div>
-              </Link>
-            ))}
+                  </h2>
+                </Link>
+              ))}
+            </nav>
           </div>
         </div>
-      </div>
+      </main>
       <Footer />
-
-      {/* <footer className="mt-auto w-full px-6 pb-8 md:pb-10"> */}
-      {/* <footer className="w-full mt:0 sm:mt-28 px-6 pb-7 md:pb-7 md:absolute md:bottom-0 md:left-0">
-        {/* <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-center text-[9px] font-black tracking-[-0.04em] uppercase sm:text-[10px] md:flex md:flex-wrap md:items-center md:justify-center md:gap-x-6 md:gap-y-3 md:text-[11px] lg:text-[12px]"> */}
-      {/* <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-center text-[9px] font-bold tracking-[-0.05em] uppercase sm:text-[7px] md:flex md:flex-wrap md:items-center md:justify-center md:gap-x-5 md:gap-y-3 md:text-[11.7px] lg:text-[11.7px]">
-          {" "}
-          {footerLinks.map((item, index) => (
-            <button
-              key={index}
-              className="whitespace-nowrap transition-opacity duration-200 hover:opacity-50"
-            >
-              {item}
-            </button>
-          ))}
-        </div>
-      </footer>  */}
     </>
   );
 }

@@ -1,7 +1,13 @@
 export type Maybe<T> = T | null;
 
+export type PageInfo = {
+  hasNextPage: boolean;
+  endCursor: string | null;
+};
+
 export type Connection<T> = {
   edges: Array<Edge<T>>;
+  pageInfo?: PageInfo;
 };
 
 export type Edge<T> = {
@@ -71,6 +77,11 @@ export type Page = {
 export type Product = Omit<ShopifyProduct, "variants" | "images"> & {
   variants: ProductVariant[];
   images: Image[];
+};
+
+export type ProductsPage = {
+  products: Product[];
+  pageInfo: PageInfo;
 };
 
 export type ProductOption = {
@@ -204,12 +215,14 @@ export type ShopifyCollectionProductsOperation = {
   data: {
     collection: {
       products: Connection<ShopifyProduct>;
-    };
+    } | null;
   };
   variables: {
     handle: string;
     reverse?: boolean;
     sortKey?: string;
+    first: number;
+    after?: string | null;
   };
 };
 
@@ -268,5 +281,7 @@ export type ShopifyProductsOperation = {
     query?: string;
     reverse?: boolean;
     sortKey?: string;
+    first: number;
+    after?: string | null;
   };
 };

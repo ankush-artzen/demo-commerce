@@ -103,10 +103,14 @@
   --color-tri-ferg-grey: #e6e6e6;
   --color-tri-ferg-lime-green: #b5ff00;
   --color-tri-ferg-red: #cd1417;
+
+  --max-width-352: 3520px;
+  --spacing-6.25: 1.5625rem;
+  --leading-4.5: 1.125rem;
 }
 
 @custom-variant phone (@media (max-width: 767px));
-@custom-variant tablet (@media (min-width: 768px));
+/* @custom-variant tablet (@media (min-width: 768px)); */
 @custom-variant desktop (@media (min-width: 1024px));
 
 @plugin "@tailwindcss/container-queries";

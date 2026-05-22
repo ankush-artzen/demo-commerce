@@ -1,11 +1,5 @@
-import { Navbar } from "components/layout/navbar";
 import { ReactNode } from "react";
 
 export default function StoreLayout({ children }: { children: ReactNode }) {
-  return (
-    <>
-      <Navbar />
-      <main>{children}</main>
-    </>
-  );
+  return children;
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -55,15 +56,41 @@ export default function Header({ landing = false }: HeaderProps) {
         }`}
       >
         <div className="mx-5 mt-3.5 flex w-full max-w-5xl items-start phone:items-center phone:mt-1.5 phone:mb-2.5">
-          <Link href="/" aria-label="palace-logo">
+          {/* <Link href="/" aria-label="palace-logo">
             <div
               className="block w-44 transition-opacity duration-150 ease-in-out hover:opacity-25"
               aria-label="logo"
             >
               <PalaceLogo />
             </div>
-          </Link>
+          </Link> */}
+          {/* // h-[31px] */}
+          <Link href="/" aria-label="black-april-logo">
+            <div
+              className="
+      relative
+      block
+      w-44
+        bottom-[2px]    sm:bottom-[12px]
 
+   h-[71px]
+   
+      transition-opacity
+      duration-150
+      ease-in-out
+      hover:opacity-25
+    "
+              aria-label="logo"
+            >
+              <Image
+                src="/images/black-april-logo.png"
+                alt="Black April Logo"
+                fill
+                priority
+                className="object-contain object-left"
+              />
+            </div>
+          </Link>
           <nav className="header-main-nav">
             {navItems.map((item) => (
               <h1 key={item.href} className="header-nav-item">
