@@ -91,7 +91,7 @@ export default function CollectionProductGrid({
       <div
         aria-label="grid"
         id="grid"
-        className="grid grid-cols-2 gap-x-0 gap-y-0 md:grid-cols-4 lg:grid-cols-6"
+        className="grid phone:grid-cols-2 tablet:grid-cols-5 desktop:grid-cols-6"
       >
         {visibleProducts.map((product, index) => (
           <ProductCard

@@ -87,7 +87,7 @@ export default function CollectionPageClient({
         <main
           role="main"
           id="mainContent"
-          className="mt-5 h-[calc(100vh-130px)] min-h-0 w-full overflow-y-auto pr-4 pt-0 lg:w-[88%]"
+          className="mt-5 h-[calc(100vh-130px)] min-h-0 w-9/12 overflow-y-auto pr-4 pt-0 phone:h-auto phone:overflow-y-visible phone:float-none phone:mt-0 phone:w-full tablet:w-10/12 phone:-translate-x-0 ease-out duration-300 lg:w-[88%]"
         >
           {initialProducts.length === 0 ? (
             <p className="py-10 text-center text-sm font-bold uppercase">

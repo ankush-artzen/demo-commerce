@@ -110,7 +110,7 @@
 }
 
 @custom-variant phone (@media (max-width: 767px));
-/* @custom-variant tablet (@media (min-width: 768px)); */
+@custom-variant tablet (@media (min-width: 768px));
 @custom-variant desktop (@media (min-width: 1024px));
 
 @plugin "@tailwindcss/container-queries";
