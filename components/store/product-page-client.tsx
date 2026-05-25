@@ -93,7 +93,7 @@ export default function ProductPageClient({
   return (
     <>
       <Logo onMenuOpenChange={setMenuOpen} />
-      <div className="mx-auto   w-full max-w-330  pr-0 sm:pr-26 min-h-0">
+      <div className="mx-auto   w-full max-w-320  pr-0 sm:pr-26 min-h-0">
         {/* <div className="mx-auto w-full max-w-[1108px] min-h-0"> */}
         <CategoryNav menuOpen={menuOpen} />
 

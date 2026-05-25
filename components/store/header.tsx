@@ -1,17 +1,8 @@
 "use client";
 
-import { useCart } from "components/cart/cart-context";
-import Price from "components/price";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-
-function formatItemCount(quantity: number) {
-  if (quantity === 1) {
-    return "1 Item";
-  }
-  return `${quantity} Items`;
-}
 
 const navItems = [
   { label: "SUMMER 2026 RANGE", href: "/range/summer-2026" },
@@ -53,10 +44,6 @@ type HeaderProps = {
 
 export default function Header({ landing = false }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { cart } = useCart();
-  const quantity = cart?.totalQuantity ?? 0;
-  const totalAmount = cart?.cost?.totalAmount;
-  const showCart = quantity > 0;
 
   return (
     <>
@@ -117,64 +104,6 @@ export default function Header({ landing = false }: HeaderProps) {
               </h1>
             ))}
           </nav>
-          <div className="ml-auto flex translate-y-1/2 items-start">
-            {showCart ? (
-              <>
-                <div
-                  aria-label="cart"
-                  className="ml-2 select-none text-xs phone:hidden"
-                >
-                  <Link
-                    href="/cart"
-                    aria-label="cart-heading"
-                    className="block bg-black px-3 py-0.5 text-center uppercase text-white"
-                  >
-                    Cart
-                  </Link>
-                  <div
-                    id="cart-footer"
-                    className="block border border-black px-1.5 py-0.5 text-left uppercase"
-                  >
-                    <span id="cart-msg" className="flex items-center gap-2">
-                      <span aria-label="cart-count" id="cart-count">
-                        {formatItemCount(quantity)}
-                      </span>
-                      {totalAmount ? (
-                        <span aria-label="cart-amount" className="inline-block">
-                          <Price
-                            amount={totalAmount.amount}
-                            currencyCode={totalAmount.currencyCode}
-                            className="inline text-xs"
-                            currencyCodeClassName="hidden"
-                          />
-                        </span>
-                      ) : null}
-                    </span>
-                  </div>
-                </div>
-
-                <Link
-                  href="/cart"
-                  aria-label="mobile-cart-heading"
-                  id="mobile-cart-heading"
-                  className="ml-px pt-0.5 text-sm uppercase text-white md:hidden desktop:hidden"
-                >
-                  <span
-                    aria-label="cart-label"
-                    className="border-2 border-x-8 border-black bg-black"
-                  >
-                    Cart
-                  </span>
-                  <span
-                    aria-label="cart-count"
-                    className="ml-px border-2 border-x-8 border-black bg-black"
-                  >
-                    {quantity}
-                  </span>
-                </Link>
-              </>
-            ) : null}
-          </div>
           <button
             type="button"
             className="ml-auto pl-2.5 md:invisible md:hidden desktop:invisible desktop:hidden"

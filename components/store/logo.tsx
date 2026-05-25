@@ -3,7 +3,14 @@
 import { TriFergSvg } from "components/store/tri-ferg-svg";
 import StoreCart from "components/store/store-cart";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+
+function shouldShowStoreCart(pathname: string) {
+  return (
+    pathname.startsWith("/product/") || pathname.startsWith("/collections/")
+  );
+}
 
 const TRI_FERG_MARK_CLASS = "ml-1.5 inline-block w-20 phone:w-12";
 
@@ -24,9 +31,14 @@ function shuffleMarks<T>(items: readonly T[]): T[] {
 
 export default function Logo({
   onMenuOpenChange,
+  showCart: showCartProp,
 }: {
   onMenuOpenChange?: (open: boolean) => void;
+  /** When omitted, cart shows only on /product/* and /collections/* */
+  showCart?: boolean;
 }) {
+  const pathname = usePathname();
+  const showCart = showCartProp ?? shouldShowStoreCart(pathname);
   const [menuOpen, setMenuOpen] = useState(false);
 
   const toggleMenu = () => {
@@ -76,7 +88,7 @@ export default function Logo({
 
       <div className="w-4/12 phone:w-1/2">
         <div className="float-right flex translate-y-1/2 items-start gap-1">
-          <StoreCart />
+          {showCart ? <StoreCart /> : null}
           <button
             type="button"
             className="ml-auto pl-2.5 md:invisible md:hidden desktop:invisible desktop:hidden"
