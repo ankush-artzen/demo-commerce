@@ -41,7 +41,7 @@ export default function HeaderMobile() {
       {/* MOBILE HEADER ONLY */}
       <header
         aria-label="mobile-header"
-        className="flex min-h-20 justify-center uppercase tablet:hidden desktop:hidden"
+        className="flex min-h-20 justify-center uppercase md:hidden desktop:hidden"
       >
         <div className="mx-5 mt-2 flex w-full items-center">
           {/* LOGO */}
@@ -73,7 +73,7 @@ export default function HeaderMobile() {
       {/* MOBILE MENU */}
       <nav
         aria-label="mobile-menu"
-        className={`fixed top-0 left-0 z-50 h-screen w-full bg-white px-5 pt-24 uppercase transition-transform duration-300 tablet:hidden desktop:hidden ${
+        className={`fixed top-0 left-0 z-50 h-screen w-full bg-white px-5 pt-24 uppercase transition-transform duration-300 md:hidden desktop:hidden ${
           menuOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >

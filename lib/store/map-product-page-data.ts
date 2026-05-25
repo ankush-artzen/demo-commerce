@@ -1,11 +1,12 @@
-import type { Product, ProductVariant } from "lib/shopify/types";
-import { parseProductDescriptionLines } from "lib/store/parse-product-description";
 import type {
-  ProductPageClientProps,
-  ProductPageImage,
-  ProductPageRelated,
-  ProductPageVariant,
+    ProductPageClientProps,
+    ProductPageImage,
+    ProductPageRelated,
+    ProductPageVariant,
 } from "components/store/product-page-client";
+import type { Product, ProductVariant } from "lib/shopify/types";
+import { shopifyImageUrl } from "lib/shopify-image-url";
+import { parseProductDescriptionLines } from "lib/store/parse-product-description";
 
 function formatVariantPrice(variant: ProductVariant): string {
   const { amount, currencyCode } = variant.price;
@@ -30,8 +31,9 @@ function mapProductImages(
         : [];
 
   return sources.map((image, index) => ({
-    src: image.url,
-    zoom: image.url,
+    src: shopifyImageUrl(image.url, 700),
+    thumbSrc: shopifyImageUrl(image.url, 90),
+    zoom: image.url.split("?")[0] ?? image.url,
     label: `${handle}-image-${index}`,
   }));
 }
@@ -55,7 +57,7 @@ export function mapProductPageData(
     .map((item) => ({
       handle: item.handle,
       alt: item.title,
-      image: item.featuredImage.url,
+      image: shopifyImageUrl(item.featuredImage.url, 90),
       active: item.handle === product.handle,
     }));
 
@@ -67,12 +69,13 @@ export function mapProductPageData(
     relatedProducts.push({
       handle: product.handle,
       alt: product.title,
-      image: product.featuredImage.url,
+      image: shopifyImageUrl(product.featuredImage.url, 90),
       active: true,
     });
   }
 
   return {
+    product,
     productId: product.id,
     handle: product.handle,
     title: product.title,

@@ -74,6 +74,25 @@ export type Page = {
   updatedAt: string;
 };
 
+export type Article = {
+  id: string;
+  handle: string;
+  title: string;
+  publishedAt: string;
+  contentHtml: string;
+  excerpt: string;
+  image: Image | null;
+  blog: {
+    handle: string;
+    title: string;
+  };
+};
+
+export type ArticlesPage = {
+  articles: Article[];
+  pageInfo: PageInfo;
+};
+
 export type Product = Omit<ShopifyProduct, "variants" | "images"> & {
   variants: ProductVariant[];
   images: Image[];
@@ -283,5 +302,32 @@ export type ShopifyProductsOperation = {
     sortKey?: string;
     first: number;
     after?: string | null;
+  };
+};
+
+export type ShopifyBlogArticlesOperation = {
+  data: {
+    blog: {
+      handle: string;
+      title: string;
+      articles: Connection<Article>;
+    } | null;
+  };
+  variables: {
+    blogHandle: string;
+    first: number;
+    after?: string | null;
+  };
+};
+
+export type ShopifyArticleOperation = {
+  data: {
+    blog: {
+      articleByHandle: Article | null;
+    } | null;
+  };
+  variables: {
+    blogHandle: string;
+    articleHandle: string;
   };
 };

@@ -3,6 +3,15 @@
 @font-face {
   font-family: "Neue Helvetica W01";
   src: url("/fonts/neue-helvetica-w01-700.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-stretch: condensed;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Neue Helvetica W01";
+  src: url("/fonts/neue-helvetica-w01-700.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-stretch: condensed;
@@ -104,14 +113,18 @@
   --color-tri-ferg-lime-green: #b5ff00;
   --color-tri-ferg-red: #cd1417;
 
-  --max-width-352: 3520px;
+  --max-width-352: 88rem;
+  --max-width-150: 37.5rem;
   --spacing-6.25: 1.5625rem;
   --leading-4.5: 1.125rem;
 }
 
 @custom-variant phone (@media (max-width: 767px));
 @custom-variant tablet (@media (min-width: 768px));
+@custom-variant md (@media (min-width: 768px));
 @custom-variant desktop (@media (min-width: 1024px));
+/* Dark utilities only apply with .dark on an ancestor — not OS prefers-color-scheme */
+@custom-variant dark (&:where(.dark, .dark *));
 
 @plugin "@tailwindcss/container-queries";
 @plugin "@tailwindcss/typography";
@@ -125,17 +138,44 @@
     border-color: var(--color-gray-200, currentColor);
   }
 
+  * {
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
   html,
   body {
     font-family: var(--font-sans);
     background: var(--color-white);
     color: var(--color-black);
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
   }
 }
 
 @layer components {
+  #grid {
+    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  #grid > a {
+    display: block;
+    min-width: 0;
+    width: 100%;
+  }
+
+  @media (min-width: 768px) {
+    #grid {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    #grid {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+  }
+
   .header-main-nav {
     margin-left: auto;
     display: flex;
@@ -192,12 +232,6 @@
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
-}
-
 @supports (font: -apple-system-body) and (-webkit-appearance: none) {
   img[loading="lazy"] {
     clip-path: inset(0.6px);
@@ -211,7 +245,5 @@ button {
     focus-visible:ring-2
     focus-visible:ring-neutral-400
     focus-visible:ring-offset-2
-    focus-visible:ring-offset-neutral-50
-    dark:focus-visible:ring-neutral-600
-    dark:focus-visible:ring-offset-neutral-900;
+    focus-visible:ring-offset-neutral-50;
 }

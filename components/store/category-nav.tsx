@@ -1,10 +1,23 @@
+"use client";
+
+import { useCart } from "components/cart/cart-context";
 import { collectionCategories } from "lib/store/collection-categories";
 import Link from "next/link";
 
-const menuLinkClass =
-  "block text-sm font-bold leading-[18px] no-underline transition duration-150 ease-in-out hover:text-amber-500 phone:py-2 text-black";
+export default function CategoryNav({
+  menuOpen = false,
+  activeCollection,
+  onFilterClick,
+  hasActiveFilters = false,
+}: {
+  menuOpen?: boolean;
+  activeCollection?: string;
+  onFilterClick?: () => void;
+  hasActiveFilters?: boolean;
+}) {
+  const { cart } = useCart();
+  const showCart = (cart?.totalQuantity ?? 0) > 0;
 
-export default function CategoryNav({ menuOpen = false }: { menuOpen?: boolean }) {
   return (
     <nav
       id="category-menu"
@@ -14,18 +27,50 @@ export default function CategoryNav({ menuOpen = false }: { menuOpen?: boolean }
       }`}
     >
       <ul className="mb-2.5">
-        {collectionCategories.map((item) => (
-          <li key={item.handle} aria-label={`menu-item-${item.handle}`}>
-            <Link href={`/collections/${item.handle}`} className={menuLinkClass}>
-              {item.label}
+        {collectionCategories.map((item) => {
+          const isActive = item.handle === activeCollection;
+          const href = `/collections/${item.handle}`;
+
+          return (
+            <li key={item.handle} aria-label={`menu-item-${item.handle}`}>
+              <Link
+                href={href}
+                className={`block text-sm font-bold leading-[18px] no-underline transition duration-150 ease-in-out hover:text-amber-500 phone:py-2 ${
+                  isActive ? "text-amber-500" : "text-black"
+                }`}
+                {...(isActive
+                  ? { "data-selector": "category-menu-active" }
+                  : {})}
+              >
+                {item.label}
+              </Link>
+            </li>
+          );
+        })}
+        {showCart ? (
+          <li aria-label="menu-item-cart">
+            <Link
+              href="/cart"
+              className="block text-sm font-bold leading-[18px] text-black no-underline transition duration-150 ease-in-out hover:text-amber-500 phone:py-2"
+            >
+              Cart
             </Link>
           </li>
-        ))}
-        <li aria-label="menu-item-cart">
-          <Link href="/cart" className={menuLinkClass}>
-            Cart
-          </Link>
-        </li>
+        ) : null}
+        {onFilterClick ? (
+          <li aria-label="menu-item-filter" className="pt-10">
+            <button
+              type="button"
+              aria-label="filter-button"
+              onClick={onFilterClick}
+              className={`block w-full cursor-pointer text-right text-sm font-bold uppercase leading-[18px] no-underline transition duration-150 ease-in-out hover:text-amber-500 ${
+                hasActiveFilters ? "text-amber-500" : "text-black"
+              }`}
+            >
+              Filter
+            </button>
+          </li>
+        ) : null}
       </ul>
     </nav>
   );

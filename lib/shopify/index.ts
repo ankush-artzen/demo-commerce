@@ -25,6 +25,7 @@ import {
   getCollectionQuery,
   getCollectionsQuery,
 } from "./queries/collection";
+import { getArticleQuery, getBlogArticlesQuery } from "./queries/blog";
 import { getMenuQuery } from "./queries/menu";
 import { getPageQuery, getPagesQuery } from "./queries/page";
 import {
@@ -33,6 +34,8 @@ import {
   getProductsQuery,
 } from "./queries/product";
 import {
+  Article,
+  ArticlesPage,
   Cart,
   Collection,
   Connection,
@@ -43,6 +46,8 @@ import {
   Product,
   ProductsPage,
   ShopifyAddToCartOperation,
+  ShopifyArticleOperation,
+  ShopifyBlogArticlesOperation,
   ShopifyCart,
   ShopifyCartOperation,
   ShopifyCollection,
@@ -653,6 +658,65 @@ export async function getProducts({
   });
 
   return reshapeProducts(removeEdgesAndNodes(res.body.data.products));
+}
+
+export async function getBlogArticlesPage({
+  blogHandle,
+  first = 24,
+  after,
+}: {
+  blogHandle: string;
+  first?: number;
+  after?: string | null;
+}): Promise<ArticlesPage | null> {
+  if (!endpoint) {
+    return null;
+  }
+
+  const res = await shopifyFetch<ShopifyBlogArticlesOperation>({
+    query: getBlogArticlesQuery,
+    variables: {
+      blogHandle,
+      first,
+      after: after ?? undefined,
+    },
+  });
+
+  const blog = res.body.data.blog;
+  if (!blog) {
+    return null;
+  }
+
+  const articles = removeEdgesAndNodes(blog.articles).filter(
+    (article): article is Article => Boolean(article?.image?.url),
+  );
+
+  return {
+    articles,
+    pageInfo: blog.articles.pageInfo ?? {
+      hasNextPage: false,
+      endCursor: null,
+    },
+  };
+}
+
+export async function getArticle({
+  blogHandle,
+  articleHandle,
+}: {
+  blogHandle: string;
+  articleHandle: string;
+}): Promise<Article | null> {
+  if (!endpoint) {
+    return null;
+  }
+
+  const res = await shopifyFetch<ShopifyArticleOperation>({
+    query: getArticleQuery,
+    variables: { blogHandle, articleHandle },
+  });
+
+  return res.body.data.blog?.articleByHandle ?? null;
 }
 
 // This is called from `app/api/revalidate.ts` so providers can control revalidation logic.

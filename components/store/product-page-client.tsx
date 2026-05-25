@@ -3,12 +3,15 @@
 import CategoryNav from "components/store/category-nav";
 import Footer from "components/store/collections/footer";
 import Logo from "components/store/logo";
+import ProductPageAddToCart from "components/store/product-page-add-to-cart";
+import type { Product } from "lib/shopify/types";
 import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
 
 export type ProductPageImage = {
   src: string;
+  thumbSrc: string;
   zoom: string;
   label: string;
 };
@@ -28,6 +31,7 @@ export type ProductPageRelated = {
 };
 
 export type ProductPageClientProps = {
+  product: Product;
   productId: string;
   handle: string;
   title: string;
@@ -54,6 +58,7 @@ function CarouselArrow({ direction }: { direction: "left" | "right" }) {
 }
 
 export default function ProductPageClient({
+  product,
   productId,
   title,
   descriptionLines,
@@ -88,7 +93,7 @@ export default function ProductPageClient({
   return (
     <>
       <Logo onMenuOpenChange={setMenuOpen} />
-      <div className="mx-auto w-full max-w-[1108px] min-h-0">
+      <div className="mx-auto   w-full max-w-330  pr-0 sm:pr-26 min-h-0">
         {/* <div className="mx-auto w-full max-w-[1108px] min-h-0"> */}
         <CategoryNav menuOpen={menuOpen} />
 
@@ -138,7 +143,7 @@ export default function ProductPageClient({
                       <div className="relative">
                         <div
                           ref={carouselRef}
-                          className="overflow-x-auto scroll-smooth"
+                          className="grid auto-cols-[100%] grid-flow-col overflow-x-auto scroll-smooth snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
                           style={{ touchAction: "pan-y" }}
                           onScroll={(event) => {
                             const container = event.currentTarget;
@@ -150,10 +155,12 @@ export default function ProductPageClient({
                             }
                           }}
                         >
-                          <div className="flex">
-                            {images.map((image, index) => (
+                          {images.map((image, index) => (
+                            <div
+                              key={image.label}
+                              className="min-w-0 snap-start"
+                            >
                               <Image
-                                key={image.label}
                                 alt={title}
                                 src={image.src}
                                 width={700}
@@ -164,10 +171,10 @@ export default function ProductPageClient({
                                 loading={index === 0 ? "eager" : "lazy"}
                                 aria-label={image.label}
                                 data-zoom={image.zoom}
-                                className="shrink-0 object-cover w-full aspect-square"
+                                className="aspect-square w-full object-cover"
                               />
-                            ))}
-                          </div>
+                            </div>
+                          ))}
                         </div>
                         {images.length > 1 ? (
                           <div>
@@ -259,11 +266,11 @@ export default function ProductPageClient({
             >
               Size Chart
             </button>
-
+{/* 
             {variants.length > 0 ? (
               <div
                 aria-label="product-actions-wrapper"
-                className="float-right my-5 grid w-[30%] pr-5 phone:order-1 phone:float-none phone:my-2.5 phone:mr-0 phone:mt-1 phone:w-full phone:items-center phone:px-5 tablet:clear-right tablet:w-[35%] tablet:pr-2.5 desktop:clear-right desktop:mt-2 desktop:grid-flow-col phone:grid-cols-2 tablet:grid-rows-2 desktop:grid-cols-2"
+                className="float-right my-5 grid w-[30%] pr-5 phone:order-1 phone:float-none phone:my-2.5 phone:mr-0 phone:mt-1 phone:w-full phone:items-center phone:grid-cols-2 phone:px-5 tablet:clear-right tablet:w-[35%] tablet:grid-cols-2 tablet:grid-rows-2 tablet:pr-2.5 desktop:clear-right desktop:mt-2 desktop:grid-flow-col desktop:grid-cols-2"
               >
                 <div
                   aria-label="product-variant-select-wrapper"
@@ -278,7 +285,7 @@ export default function ProductPageClient({
                       onChange={(event) =>
                         setSelectedVariantId(event.target.value)
                       }
-                      className="w-[90%] cursor-pointer appearance-none overflow-auto border-2 border-black bg-[image:var(--background-image-selector-icon)] bg-[top_50%_left_95%] bg-no-repeat pl-2 text-sm uppercase outline-hidden hover:bg-white hover:text-black focus:ring-0 phone:mt-0 phone:h-8 phone:w-[98%] phone:py-1 phone:text-base tablet:w-full h-7 mt-2.5"
+                      className="mt-2.5 h-7 w-[90%] cursor-pointer appearance-none overflow-auto border-2 border-black bg-[image:var(--background-image-selector-icon)] bg-[top_50%_left_95%] bg-no-repeat pl-2 text-sm uppercase outline-hidden hover:bg-white hover:text-black focus:ring-0 phone:mt-0 phone:h-8 phone:w-[98%] phone:py-1 phone:text-base tablet:w-full"
                     >
                       {variants.map((variant) => (
                         <option
@@ -294,7 +301,7 @@ export default function ProductPageClient({
                   </div>
                 </div>
 
-                <form method="post" action="/cart">
+                <form method="post" action="/cart" className="w-full min-w-0">
                   <input
                     type="hidden"
                     name="cartFormInput"
@@ -331,15 +338,92 @@ export default function ProductPageClient({
                   />
                   <button
                     type="submit"
-                    className="flex items-center justify-center whitespace-nowrap border-2 border-black bg-black px-4 text-center cursor-pointer text-sm font-bold uppercase text-white phone:my-1 phone:h-8 phone:py-1 phone:text-base mt-2.5 h-7 hover:bg-white hover:text-black w-full"
+                    className="mt-2.5 flex h-7 w-full cursor-pointer items-center justify-center whitespace-nowrap border-2 border-black bg-black px-4 text-center text-sm font-bold uppercase text-white hover:bg-white hover:text-black phone:my-1 phone:h-8 phone:py-1 phone:text-base"
                     aria-label={`add-${selectedVariant?.label ?? "item"}-to-cart`}
                   >
-                    <div>Add to Cart</div>
+                    Add to Cart
                   </button>
                 </form>
               </div>
-            ) : null}
+            ) : null} */}
+{variants.length > 0 ? (
+  <div
+    aria-label="product-actions-wrapper"
+    className="
+      float-right
+      my-5
+      grid
+      w-[30%]
+      grid-cols-2
+      gap-2
+      pr-5
 
+      phone:order-1
+      phone:float-none
+      phone:my-2.5
+      phone:w-full
+      phone:grid-cols-2
+      phone:px-5
+
+      tablet:w-[35%]
+      tablet:pr-2.5
+    "
+  >
+    <div
+      aria-label="product-variant-select-wrapper"
+      className="w-full"
+    >
+      <select
+        id="variant-selector"
+        aria-label="product-select"
+        role="combobox"
+        value={selectedVariantId}
+        onChange={(event) =>
+          setSelectedVariantId(event.target.value)
+        }
+        className="
+          h-7
+          w-full
+          cursor-pointer
+          appearance-none
+          border-2
+          border-black
+          bg-[image:var(--background-image-selector-icon)]
+          bg-[top_50%_left_95%]
+          bg-no-repeat
+          pl-2
+          text-sm
+          uppercase
+          outline-hidden
+
+          hover:bg-white
+          hover:text-black
+          focus:ring-0
+
+          phone:h-8
+          phone:text-base
+        "
+      >
+        {variants.map((variant) => (
+          <option
+            key={variant.id}
+            value={variant.id}
+            className="uppercase"
+          >
+            {variant.label}
+          </option>
+        ))}
+      </select>
+    </div>
+
+    <ProductPageAddToCart
+      product={product}
+      selectedVariantId={selectedVariantId}
+      variantLabel={selectedVariant?.label ?? "item"}
+      className="flex h-7 w-full items-center justify-center border-2 border-black bg-black px-4 text-sm font-bold uppercase text-white transition hover:bg-white hover:text-black disabled:cursor-not-allowed disabled:opacity-60 phone:h-8 phone:text-base"
+    />
+  </div>
+) : null}
             {relatedProducts.length > 0 ? (
               <div
                 aria-label="product-selector-grid"
@@ -388,12 +472,14 @@ export default function ProductPageClient({
                       type="button"
                       aria-label="product-thumb"
                       id={`product-thumb-${index}`}
-                      className="p-0.5 transition duration-150 ease-in-out hover:cursor-pointer hover:opacity-40"
+                      className={`p-0.5 transition duration-150 ease-in-out hover:cursor-pointer hover:opacity-40 ${
+                        index === selectedImage ? "opacity-40" : ""
+                      }`}
                       onClick={() => scrollToImage(index)}
                     >
                       <Image
                         alt=""
-                        src={image.src}
+                        src={image.thumbSrc}
                         width={90}
                         height={90}
                         unoptimized

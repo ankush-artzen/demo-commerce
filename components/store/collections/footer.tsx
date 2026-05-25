@@ -142,7 +142,7 @@ export default function Footer() {
       className="shrink-0 clear-both mx-auto my-0 h-1/4 max-w-sm phone:mt-10 phone:max-w-xs phone:-translate-x-0 ease-out duration-300"
     >
       <div className="text-center leading-4 phone:leading-none">
-        <div className="block desktop:hidden desktop:invisible tablet:hidden tablet:invisible">
+        <div className="block desktop:hidden desktop:invisible md:hidden md:invisible">
           <details className="my-2 text-sm uppercase">
             <summary className={detailsSummaryClass}>
               <h4 className="w-full text-center">Shops</h4>

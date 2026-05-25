@@ -69,7 +69,7 @@ export default function PalaceLandingPage() {
                   >
                     <TriFergSvg />
                   </div>
-                  <h2 className="text-center text-xl phone:mt-2 phone:text-xs tablet:text-md desktop:absolute desktop:inset-0 desktop:flex desktop:w-full desktop:items-center desktop:justify-center desktop:opacity-0 desktop:transition-opacity desktop:duration-150 desktop:ease-in-out desktop:group-hover:opacity-100">
+                  <h2 className="text-center text-xl phone:mt-2 phone:text-xs md:text-md desktop:absolute desktop:inset-0 desktop:flex desktop:w-full desktop:items-center desktop:justify-center desktop:opacity-0 desktop:transition-opacity desktop:duration-150 desktop:ease-in-out desktop:group-hover:opacity-100">
                     {item.title}
                   </h2>
                 </Link>

@@ -1,6 +1,4 @@
 import CollectionPageClient from "components/store/collection-page-client";
-import Footer from "components/store/collections/footer";
-import Logo from "components/store/logo";
 import type { PageInfo, Product } from "lib/shopify/types";
 
 export default function CollectionPageLayout({
@@ -13,17 +11,10 @@ export default function CollectionPageLayout({
   pageInfo: PageInfo;
 }) {
   return (
-    <>
-      <Logo />
-
-      <CollectionPageClient
-        collection={collection}
-        initialProducts={products}
-        initialPageInfo={pageInfo}
-      />
-      <div>
-        <Footer />
-      </div>
-    </>
+    <CollectionPageClient
+      collection={collection}
+      initialProducts={products}
+      initialPageInfo={pageInfo}
+    />
   );
 }

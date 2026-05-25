@@ -2,11 +2,11 @@
 
 import { TAGS } from "lib/constants";
 import {
-  addToCart,
-  createCart,
-  getCart,
-  removeFromCart,
-  updateCart,
+    addToCart,
+    createCart,
+    getCart,
+    removeFromCart,
+    updateCart,
 } from "lib/shopify";
 import { updateTag } from "next/cache";
 import { cookies } from "next/headers";
@@ -20,11 +20,46 @@ export async function addItem(
     return "Error adding item to cart";
   }
 
+  const result = await addVariantToCart(selectedVariantId);
+  return result.error ?? null;
+}
+
+export async function addVariantToCart(
+  variantId: string
+): Promise<{ error?: string }> {
+  if (!variantId) {
+    return { error: "No variant selected" };
+  }
+
   try {
-    await addToCart([{ merchandiseId: selectedVariantId, quantity: 1 }]);
+    const cookieStore = await cookies();
+    if (!cookieStore.get("cartId")?.value) {
+      const cart = await createCart();
+      cookieStore.set("cartId", cart.id!);
+    }
+    await addToCart([{ merchandiseId: variantId, quantity: 1 }]);
     updateTag(TAGS.cart);
+    return {};
   } catch (e) {
-    return "Error adding item to cart";
+    console.error(e);
+    return { error: "Error adding item to cart" };
+  }
+}
+
+export async function removeCartLine(
+  lineId: string
+): Promise<{ error?: string }> {
+  if (!lineId) {
+    return { error: "Missing line id" };
+  }
+
+  try {
+    await removeFromCart([lineId]);
+    updateTag(TAGS.cart);
+    return {};
+  } catch (e) {
+    console.error(e);
+    return { error: "Error removing item" };
   }
 }
 

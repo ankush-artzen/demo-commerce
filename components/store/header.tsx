@@ -1,8 +1,17 @@
 "use client";
 
+import { useCart } from "components/cart/cart-context";
+import Price from "components/price";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+
+function formatItemCount(quantity: number) {
+  if (quantity === 1) {
+    return "1 Item";
+  }
+  return `${quantity} Items`;
+}
 
 const navItems = [
   { label: "SUMMER 2026 RANGE", href: "/range/summer-2026" },
@@ -44,6 +53,10 @@ type HeaderProps = {
 
 export default function Header({ landing = false }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { cart } = useCart();
+  const quantity = cart?.totalQuantity ?? 0;
+  const totalAmount = cart?.cost?.totalAmount;
+  const showCart = quantity > 0;
 
   return (
     <>
@@ -51,7 +64,7 @@ export default function Header({ landing = false }: HeaderProps) {
         aria-label="header"
         className={`flex min-h-24 justify-center uppercase phone:min-h-20 ${
           landing
-            ? "tablet:invisible tablet:hidden desktop:invisible desktop:hidden"
+            ? "md:invisible md:hidden desktop:invisible desktop:hidden"
             : ""
         }`}
       >
@@ -104,10 +117,67 @@ export default function Header({ landing = false }: HeaderProps) {
               </h1>
             ))}
           </nav>
+          <div className="ml-auto flex translate-y-1/2 items-start">
+            {showCart ? (
+              <>
+                <div
+                  aria-label="cart"
+                  className="ml-2 select-none text-xs phone:hidden"
+                >
+                  <Link
+                    href="/cart"
+                    aria-label="cart-heading"
+                    className="block bg-black px-3 py-0.5 text-center uppercase text-white"
+                  >
+                    Cart
+                  </Link>
+                  <div
+                    id="cart-footer"
+                    className="block border border-black px-1.5 py-0.5 text-left uppercase"
+                  >
+                    <span id="cart-msg" className="flex items-center gap-2">
+                      <span aria-label="cart-count" id="cart-count">
+                        {formatItemCount(quantity)}
+                      </span>
+                      {totalAmount ? (
+                        <span aria-label="cart-amount" className="inline-block">
+                          <Price
+                            amount={totalAmount.amount}
+                            currencyCode={totalAmount.currencyCode}
+                            className="inline text-xs"
+                            currencyCodeClassName="hidden"
+                          />
+                        </span>
+                      ) : null}
+                    </span>
+                  </div>
+                </div>
 
+                <Link
+                  href="/cart"
+                  aria-label="mobile-cart-heading"
+                  id="mobile-cart-heading"
+                  className="ml-px pt-0.5 text-sm uppercase text-white md:hidden desktop:hidden"
+                >
+                  <span
+                    aria-label="cart-label"
+                    className="border-2 border-x-8 border-black bg-black"
+                  >
+                    Cart
+                  </span>
+                  <span
+                    aria-label="cart-count"
+                    className="ml-px border-2 border-x-8 border-black bg-black"
+                  >
+                    {quantity}
+                  </span>
+                </Link>
+              </>
+            ) : null}
+          </div>
           <button
             type="button"
-            className="ml-auto pl-2.5 tablet:invisible tablet:hidden desktop:invisible desktop:hidden"
+            className="ml-auto pl-2.5 md:invisible md:hidden desktop:invisible desktop:hidden"
             aria-label="mobile-menu-btn"
             id="mobile-menu-btn"
             data-menu-open={menuOpen ? "true" : "false"}
@@ -128,7 +198,7 @@ export default function Header({ landing = false }: HeaderProps) {
       <nav
         id="mobile-menu"
         aria-label="mobile-menu"
-        className={`fixed z-20 mt-20 size-full w-full bg-white px-5 uppercase duration-300 ease-out tablet:invisible tablet:hidden desktop:invisible desktop:hidden ${
+        className={`fixed z-20 mt-20 size-full w-full bg-white px-5 uppercase duration-300 ease-out md:invisible md:hidden desktop:invisible desktop:hidden ${
           menuOpen ? "translate-x-0" : "phone:translate-x-full"
         }`}
       >

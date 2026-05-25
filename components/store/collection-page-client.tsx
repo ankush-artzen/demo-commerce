@@ -1,15 +1,16 @@
 "use client";
 
+import CategoryNav from "components/store/category-nav";
 import CollectionFilterModal from "components/store/collection-filter-modal";
 import CollectionProductGrid from "components/store/collection-product-grid";
+import Footer from "components/store/collections/footer";
+import Logo from "components/store/logo";
 import type { PageInfo, Product } from "lib/shopify/types";
-import { collectionCategories } from "lib/store/collection-categories";
 import {
   applyCollectionFilters,
   defaultCollectionFilters,
   type CollectionFilters,
 } from "lib/store/collection-filters";
-import Link from "next/link";
 import { useState } from "react";
 
 export default function CollectionPageClient({
@@ -21,6 +22,7 @@ export default function CollectionPageClient({
   initialProducts: Product[];
   initialPageInfo: PageInfo;
 }) {
+  const [menuOpen, setMenuOpen] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   const [filters, setFilters] = useState<CollectionFilters>(
     defaultCollectionFilters,
@@ -33,61 +35,20 @@ export default function CollectionPageClient({
   };
 
   return (
-    <div className="mx-auto w-full max-w-7xl min-h-0 bg-white">
-      <nav
-        id="category-menu"
-        aria-label="category-menu"
-        className="float-left mr-2.5 mt-5 box-content hidden w-[12%] shrink-0 pt-5 pr-5 text-right uppercase lg:block"
-      >
-        <ul className="mb-2.5 space-y-[1px]">
-          {collectionCategories.map((item) => {
-            const isActive = item.handle === collection;
-            const href = `/collections/${item.handle}`;
+    <>
+      <Logo onMenuOpenChange={setMenuOpen} />
+      <div className="mx-auto w-full max-w-352 pr-0 sm:pr-32 min-h-0">      {/* <div className="mx-auto w-full max-w-352 min-h-0"> */}
+        <CategoryNav
+          menuOpen={menuOpen}
+          activeCollection={collection}
+          onFilterClick={() => setFilterOpen(true)}
+          hasActiveFilters={hasActiveFilters}
+        />
 
-            return (
-              <li key={item.handle} aria-label={`menu-item-${item.handle}`}>
-                <Link
-                  href={href}
-                  className={`block text-sm font-bold leading-[18px] no-underline transition duration-150 ease-in-out hover:text-amber-500 ${
-                    isActive ? "text-amber-500" : "text-black"
-                  }`}
-                  {...(isActive
-                    ? { "data-selector": "category-menu-active" }
-                    : {})}
-                >
-                  {item.label}
-                </Link>
-              </li>
-            );
-          })}
-          <li aria-label="menu-item-cart">
-            <Link
-              href="/search"
-              className="block text-sm font-bold leading-[18px] text-black no-underline transition duration-150 ease-in-out hover:text-amber-500"
-            >
-              Cart
-            </Link>
-          </li>
-          <li aria-label="menu-item-filter" className="pt-10">
-            <button
-              type="button"
-              aria-label="filter-button"
-              onClick={() => setFilterOpen(true)}
-              className={`block w-full cursor-pointer text-right text-sm font-bold uppercase leading-[18px] no-underline transition duration-150 ease-in-out hover:text-amber-500 ${
-                hasActiveFilters ? "text-amber-500" : "text-black"
-              }`}
-            >
-              Filter
-            </button>
-          </li>
-        </ul>
-      </nav>
-
-      <div className="flex">
         <main
           role="main"
           id="mainContent"
-          className="mt-5 h-[calc(100vh-130px)] min-h-0 w-9/12 overflow-y-auto pr-4 pt-0 phone:h-auto phone:overflow-y-visible phone:float-none phone:mt-0 phone:w-full tablet:w-10/12 phone:-translate-x-0 ease-out duration-300 lg:w-[88%]"
+          className="h-[calc(100vh-130px)] min-h-0 overflow-y-auto mt-5 w-9/12 phone:h-auto phone:overflow-y-visible phone:float-none phone:mt-0 phone:w-full md:w-10/12 phone:-translate-x-0 ease-out duration-300"
         >
           {initialProducts.length === 0 ? (
             <p className="py-10 text-center text-sm font-bold uppercase">
@@ -103,6 +64,8 @@ export default function CollectionPageClient({
             />
           )}
         </main>
+
+        <Footer />
       </div>
 
       <CollectionFilterModal
@@ -123,6 +86,6 @@ export default function CollectionPageClient({
         }
         onClear={clearFilters}
       />
-    </div>
+    </>
   );
 }

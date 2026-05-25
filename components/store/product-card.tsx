@@ -1,4 +1,5 @@
 import { formatProductPrice } from "lib/format-product-price";
+import { shopifyImageUrl } from "lib/shopify-image-url";
 import type { Product } from "lib/shopify/types";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,7 +12,7 @@ export default function ProductCard({
   priority?: boolean;
 }) {
   const price = formatProductPrice(product);
-  const imageUrl = product.featuredImage.url;
+  const imageUrl = shopifyImageUrl(product.featuredImage.url, 400);
 
   return (
     <Link
@@ -21,7 +22,7 @@ export default function ProductCard({
     >
       <div
         id={`product-card-${product.handle}`}
-        className="group relative mb-10 block text-center uppercase phone:mb-0 phone:flex phone:flex-col phone:content-center tablet:max-w-[178px] desktop:max-w-[178px]"
+        className="group relative mb-10 block text-center uppercase phone:mb-0 phone:flex phone:flex-col phone:content-center md:max-w-[178px] desktop:max-w-[178px]"
       >
         <div
           aria-label="product-card"
@@ -32,9 +33,10 @@ export default function ProductCard({
             alt={product.title}
             width={200}
             height={200}
+            unoptimized
             priority={priority}
-            sizes="(min-width: 45em) 50vw, 100vw"
-            className="w-full transition-opacity duration-150 ease-in-out phone:inline-block tablet:max-w-[178px] tablet:group-hover:opacity-40 desktop:max-w-[178px] desktop:group-hover:opacity-40 select-none"
+            sizes="178px"
+            className="w-full transition-opacity duration-150 ease-in-out phone:inline-block md:max-w-[178px] md:group-hover:opacity-40 desktop:max-w-[178px] desktop:group-hover:opacity-40 select-none"
             style={{ aspectRatio: "1 / 1" }}
           />
         </div>

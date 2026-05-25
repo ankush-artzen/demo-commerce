@@ -1,6 +1,7 @@
 "use client";
 
 import { TriFergSvg } from "components/store/tri-ferg-svg";
+import StoreCart from "components/store/store-cart";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -50,7 +51,7 @@ export default function Logo({
       role="banner"
       id="header"
       aria-label="header"
-      className="mx-auto flex max-w-(--breakpoint-xl) py-2.5 text-center ease-out duration-300 phone:sticky phone:top-0 phone:z-50 phone:w-full phone:py-1.5 phone:pb-4 tablet:w-[90%] tablet:pb-4 desktop:w-[70%]"
+      className="mx-auto flex max-w-(--breakpoint-xl) py-2.5 text-center ease-out duration-300 phone:sticky phone:top-0 phone:z-50 phone:w-full phone:py-1.5 phone:pb-4 md:w-[90%] md:pb-4 desktop:w-[70%]"
     >
       <div className="w-4/12 phone:invisible phone:hidden" />
 
@@ -74,10 +75,11 @@ export default function Logo({
       </div>
 
       <div className="w-4/12 phone:w-1/2">
-        <div className="float-right flex translate-y-1/2">
+        <div className="float-right flex translate-y-1/2 items-start gap-1">
+          <StoreCart />
           <button
             type="button"
-            className="ml-auto pl-2.5 tablet:invisible tablet:hidden desktop:invisible desktop:hidden"
+            className="ml-auto pl-2.5 md:invisible md:hidden desktop:invisible desktop:hidden"
             aria-label="mobile-menu-btn"
             id="mobile-menu-btn"
             data-menu-open={menuOpen ? "true" : "false"}

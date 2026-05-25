@@ -1,0 +1,238 @@
+"use client";
+
+import { useCart } from "components/cart/cart-context";
+import CartLineRemoveButton from "components/store/cart-line-remove-button";
+import CategoryNav from "components/store/category-nav";
+import Footer from "components/store/collections/footer";
+import Logo from "components/store/logo";
+import { DEFAULT_OPTION } from "lib/constants";
+import { formatCartMoney } from "lib/format-cart-money";
+import type { CartItem } from "lib/shopify/types";
+import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
+
+const TERMS_URL =
+  "https://boring.palaceskateboards.com/row/terms-and-conditions";
+
+function CartLineRow({ line }: { line: CartItem }) {
+  const variantLabel =
+    line.merchandise.title === DEFAULT_OPTION
+      ? ""
+      : line.merchandise.title;
+  const lineTotal = formatCartMoney(
+    line.cost.totalAmount.amount,
+    line.cost.totalAmount.currencyCode,
+  );
+  const unitAmount =
+    line.quantity > 0
+      ? formatCartMoney(
+          (parseFloat(line.cost.totalAmount.amount) / line.quantity).toString(),
+          line.cost.totalAmount.currencyCode,
+        )
+      : lineTotal;
+  const image = line.merchandise.product.featuredImage;
+
+  return (
+    <div
+      aria-label={line.merchandise.product.handle}
+      className="flex border-b border-black uppercase phone:min-h-28 phone:pb-3"
+    >
+      <div className="w-1/5 phone:w-[32%]">
+        <Link href={`/product/${line.merchandise.product.handle}`}>
+          {image?.url ? (
+            <Image
+              alt={line.merchandise.product.title}
+              src={image.url}
+              width={120}
+              height={120}
+              unoptimized
+              sizes="(min-width: 45em) 50vw, 100vw"
+              className="w-full"
+              style={{ aspectRatio: "1 / 1" }}
+            />
+          ) : null}
+        </Link>
+      </div>
+
+      <div className="mt-2 w-[55%]">
+        <div className="ml-2 text-left">
+          <Link
+            href={`/product/${line.merchandise.product.handle}`}
+            className="m-0 whitespace-pre-wrap text-sm font-bold no-underline phone:w-full phone:whitespace-pre-wrap"
+          >
+            {line.merchandise.product.title}
+          </Link>
+          <div aria-label="price" className="text-sm">
+            <div className="text-[0.85em]">
+              {variantLabel ? <div>{variantLabel}</div> : null}
+              <div className="flex space-x-1">
+                <div>{unitAmount}</div>
+              </div>
+            </div>
+            <div
+              aria-label="delete-button"
+              className="mt-2 md:invisible md:hidden desktop:invisible desktop:hidden"
+            >
+              {line.id ? (
+                <CartLineRemoveButton
+                  lineId={line.id}
+                  merchandiseId={line.merchandise.id}
+                />
+              ) : null}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-2 flex w-1/4 phone:w-[18%]">
+        <div className="text-sm phone:invisible phone:hidden">
+          {line.id ? (
+            <CartLineRemoveButton
+              lineId={line.id}
+              merchandiseId={line.merchandise.id}
+            />
+          ) : null}
+        </div>
+        <div className="w-full text-right text-sm">
+          <div>{lineTotal}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function CartPageClient() {
+  const { cart } = useCart();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+
+  const lines = cart?.lines ?? [];
+  const subtotal = cart?.cost?.subtotalAmount ?? cart?.cost?.totalAmount;
+
+  return (
+    <>
+      <Logo onMenuOpenChange={setMenuOpen} />
+
+      <div className="mx-auto w-full max-w-352 min-h-0">
+        <CategoryNav menuOpen={menuOpen} />
+
+        <main
+          role="main"
+          id="mainContent"
+          className="mt-5 h-[calc(100vh-130px)] min-h-0 w-9/12 overflow-y-auto phone:h-auto phone:overflow-y-visible phone:float-none phone:mt-0 phone:w-full  phone:-translate-x-0 ease-out duration-300"
+        >
+          <div
+            id="cart-view"
+            className="mx-auto mt-5 w-full max-w-150 phone:h-full phone:px-2.5"
+          >
+            {lines.length === 0 ? (
+              <p className="py-16 text-center text-sm font-bold uppercase">
+                Your cart is empty.{" "}
+                <Link
+                  href="/collections/all"
+                  className="underline hover:no-underline"
+                >
+                  Continue shopping
+                </Link>
+              </p>
+            ) : (
+              <>
+                {lines.map((line) => (
+                  <CartLineRow key={line.id ?? line.merchandise.id} line={line} />
+                ))}
+
+                <div className="mt-4 text-center text-sm font-bold uppercase phone:mt-3">
+                  {subtotal ? (
+                    <div aria-label="cart-subtotal" className="mb-3.5">
+                      Subtotal
+                      <span className="ml-1 inline-block">
+                        <div>
+                          {formatCartMoney(
+                            subtotal.amount,
+                            subtotal.currencyCode,
+                          )}
+                        </div>
+                      </span>
+                    </div>
+                  ) : null}
+
+                  <div className="pb-4">
+                    <div className="flex justify-center">
+                      <div className="relative flex gap-2">
+                        <input
+                          aria-label="terms-checkbox"
+                          id="terms-checkbox"
+                          type="checkbox"
+                          required
+                          checked={termsAccepted}
+                          onChange={(event) =>
+                            setTermsAccepted(event.target.checked)
+                          }
+                          className="peer relative mt-px size-4 shrink-0 cursor-pointer appearance-none rounded-none border-2 border-black bg-white align-sub checked:border-0 checked:bg-black"
+                        />
+                        <label
+                          htmlFor="terms-checkbox"
+                          className="select-none uppercase"
+                        >
+                          I agree to the{" "}
+                          <a
+                            className="underline"
+                            aria-label="terms-and-conditions"
+                            href={TERMS_URL}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            Terms and Conditions
+                          </a>
+                        </label>
+                        <svg
+                          className="pointer-events-none absolute left-0 top-0.5 hidden size-4 text-white peer-checked:block"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth={4}
+                          strokeLinecap="square"
+                        >
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+
+                  {cart?.checkoutUrl ? (
+                    <a
+                      aria-label="checkout-btn-link"
+                      href={termsAccepted ? cart.checkoutUrl : undefined}
+                      className={
+                        termsAccepted ? "" : "pointer-events-none"
+                      }
+                      tabIndex={termsAccepted ? 0 : -1}
+                    >
+                      <button
+                        type="button"
+                        disabled={!termsAccepted}
+                        className="mx-auto mb-[18px] inline-block cursor-pointer items-center justify-center whitespace-nowrap border-2 border-black bg-black px-4 text-center text-base! font-bold uppercase text-white hover:bg-white hover:text-black disabled:cursor-not-allowed disabled:opacity-50 phone:my-1 phone:mb-[18px] phone:h-8 phone:py-1 phone:text-base md:mb-[18px]"
+                        aria-label="checkout-btn"
+                      >
+                        Checkout
+                      </button>
+                    </a>
+                  ) : null}
+
+                  <div className="mt-1 leading-none text-gray-400">
+                    Limited to 1 per size / item
+                  </div>
+                  <div className="text-gray-400">*Some exceptions apply</div>
+                </div>
+              </>
+            )}
+          </div>
+        </main>
+
+        <Footer />
+      </div>
+    </>
+  );
+}

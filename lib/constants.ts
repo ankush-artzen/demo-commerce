@@ -65,3 +65,29 @@ export function getShopifyHomeCarouselCollectionHandle(): string {
     "hidden-homepage-carousel"
   );
 }
+
+export function getShopifyAdviceCollectionHandle(): string {
+  return process.env.SHOPIFY_ADVICE_COLLECTION_HANDLE?.trim() || "all";
+}
+
+export function getShopifyAdviceBlogHandle(): string | undefined {
+  const handle = process.env.SHOPIFY_ADVICE_BLOG_HANDLE?.trim();
+  return handle || undefined;
+}
+
+export function getShopifyLookbookBlogHandle(): string | undefined {
+  const handle = process.env.SHOPIFY_LOOKBOOK_BLOG_HANDLE?.trim();
+  return handle || undefined;
+}
+
+export type ShopifyAdviceFeedSource = "auto" | "blog" | "products";
+
+export function getShopifyAdviceFeedSource(): ShopifyAdviceFeedSource {
+  const source = process.env.SHOPIFY_ADVICE_FEED_SOURCE?.trim();
+  if (source === "blog" || source === "products") {
+    return source;
+  }
+  return "auto";
+}
+
+export const SHOPIFY_ADVICE_PAGE_SIZE = 24;

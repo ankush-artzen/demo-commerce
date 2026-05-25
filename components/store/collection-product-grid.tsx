@@ -91,13 +91,13 @@ export default function CollectionProductGrid({
       <div
         aria-label="grid"
         id="grid"
-        className="grid phone:grid-cols-2 tablet:grid-cols-5 desktop:grid-cols-6"
+        className="grid phone:grid-cols-2 md:grid-cols-5 desktop:grid-cols-6"
       >
         {visibleProducts.map((product, index) => (
           <ProductCard
             key={product.id}
             product={product}
-            priority={index < 12}
+            priority={index < 6}
           />
         ))}
       </div>
