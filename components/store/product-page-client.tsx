@@ -332,7 +332,7 @@ export default function ProductPageClient({
 )}
 
       {/* THUMBNAILS */}
-      {images.length > 1 ? (
+      {/* {images.length > 1 ? (
         <div
           aria-label="product-images-grid"
           id="product-images-grid"
@@ -371,7 +371,7 @@ export default function ProductPageClient({
             ))}
           </div>
         </div>
-      ) : null}
+      ) : null} */}
     </div>
   ) : null}
 
