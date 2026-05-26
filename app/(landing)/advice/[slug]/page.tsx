@@ -1,8 +1,8 @@
+import { getAdviceDetail } from "lib/get-advice-detail";
+import { notFound } from "next/navigation";
+import { ArticleDetail } from "../../../../components/advice/article-detail";
 import Footer from "../../../../components/store/footer";
 import Header from "../../../../components/store/header";
-import { ArticleDetail } from "../../../../components/advice/article-detail";
-import { fetchShopifyArticleDetail } from "lib/shopify-advice";
-import { notFound } from "next/navigation";
 
 export default async function AdviceArticlePage({
   params,
@@ -10,7 +10,7 @@ export default async function AdviceArticlePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const article = await fetchShopifyArticleDetail("advice", slug);
+  const article = await getAdviceDetail(slug);
 
   if (!article) {
     notFound();

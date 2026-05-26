@@ -1,6 +1,7 @@
 import Footer from "../../../../components/store/footer";
 import Header from "../../../../components/store/header";
 import { ArticleDetail } from "../../../../components/advice/article-detail";
+import { shopifyArticleToDetail } from "lib/get-advice-detail";
 import { fetchShopifyArticleDetail } from "lib/shopify-advice";
 import { notFound } from "next/navigation";
 
@@ -19,7 +20,7 @@ export default async function LookbookArticlePage({
   return (
     <>
       <Header />
-      <ArticleDetail article={article} />
+      <ArticleDetail article={shopifyArticleToDetail(article)} />
       <Footer />
     </>
   );

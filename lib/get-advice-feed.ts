@@ -1,10 +1,18 @@
 import type { AdviceFeedResponse } from "lib/advice-types";
+import {
+  fetchDatoAdviceFeed,
+  isDatoCmsConfigured,
+} from "lib/cms/demo-store-advice";
 import { fetchShopifyAdviceFeed } from "lib/shopify-advice";
 import { headers } from "next/headers";
 
 export async function getAdviceFeed(
   cursor?: string | null,
 ): Promise<AdviceFeedResponse> {
+  if (isDatoCmsConfigured()) {
+    return fetchDatoAdviceFeed();
+  }
+
   try {
     const headersList = await headers();
     const host = headersList.get("host") ?? "localhost:3000";

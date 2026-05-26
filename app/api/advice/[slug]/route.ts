@@ -1,3 +1,7 @@
+import {
+  fetchDatoAdviceBySlug,
+  isDatoCmsConfigured,
+} from "lib/cms/demo-store-advice";
 import { fetchShopifyAdviceBySlug } from "lib/shopify-advice";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -10,7 +14,9 @@ export async function GET(
   const { slug } = await params;
 
   try {
-    const item = await fetchShopifyAdviceBySlug(slug);
+    const item = isDatoCmsConfigured()
+      ? await fetchDatoAdviceBySlug(slug)
+      : await fetchShopifyAdviceBySlug(slug);
 
     if (!item) {
       return NextResponse.json({ error: "Advice not found" }, { status: 404 });
@@ -19,7 +25,7 @@ export async function GET(
     return NextResponse.json(item);
   } catch {
     return NextResponse.json(
-      { error: "Failed to fetch advice item from Shopify" },
+      { error: "Failed to fetch advice item" },
       { status: 502 },
     );
   }

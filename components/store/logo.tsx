@@ -1,14 +1,16 @@
 "use client";
 
-import { TriFergSvg } from "components/store/tri-ferg-svg";
 import StoreCart from "components/store/store-cart";
+import { TriFergSvg } from "components/store/tri-ferg-svg";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 function shouldShowStoreCart(pathname: string) {
   return (
-    pathname.startsWith("/product/") || pathname.startsWith("/collections/")
+    pathname.startsWith("/product/") ||
+    pathname.startsWith("/collections/") ||
+    pathname === "/cart"
   );
 }
 
@@ -34,7 +36,7 @@ export default function Logo({
   showCart: showCartProp,
 }: {
   onMenuOpenChange?: (open: boolean) => void;
-  /** When omitted, cart shows only on /product/* and /collections/* */
+  /** When omitted, cart shows on /product/*, /collections/*, and /cart */
   showCart?: boolean;
 }) {
   const pathname = usePathname();

@@ -37,7 +37,7 @@ export default function CollectionPageClient({
   return (
     <>
       <Logo onMenuOpenChange={setMenuOpen} />
-      <div className="mx-auto w-full max-w-352 pr-0 sm:pr-32 min-h-0">      {/* <div className="mx-auto w-full max-w-352 min-h-0"> */}
+      <div className="mx-auto w-full max-w-[1400px] mt-0 sm:mt-3 overflow-hidden bg-white min-h-0">      {/* <div className="mx-auto w-full max-w-352 min-h-0"> */}
         <CategoryNav
           menuOpen={menuOpen}
           activeCollection={collection}
@@ -48,7 +48,26 @@ export default function CollectionPageClient({
         <main
           role="main"
           id="mainContent"
-          className="h-[calc(100vh-130px)] min-h-0 overflow-y-auto mt-5 w-9/12 phone:h-auto phone:overflow-y-visible phone:float-none phone:mt-0 phone:w-full md:w-10/12 phone:-translate-x-0 ease-out duration-300"
+          className="
+  h-[calc(100vh-130px)]
+  min-h-0
+  overflow-y-scroll
+  w-[73%]
+
+  ease-out
+  duration-300
+
+  md:w-[75.2%]
+
+  phone:h-auto
+  phone:overflow-y-visible
+  phone:float-none
+  phone:mt-0
+  phone:w-full
+  phone:pr-0
+  phone:-translate-x-0
+"
+          // className="h-[calc(100vh-130px)] min-h-0 overflow-y-auto mt-5 w-9/12 phone:h-auto phone:overflow-y-visible phone:float-none phone:mt-0 phone:w-full md:w-10/12 phone:-translate-x-0 ease-out duration-300"
         >
           {initialProducts.length === 0 ? (
             <p className="py-10 text-center text-sm font-bold uppercase">
