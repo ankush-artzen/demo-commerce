@@ -105,8 +105,7 @@ export default function CollectionProductGrid({
       <div
         aria-label="infinite-scroll-sentinel"
         ref={sentinelRef}
-        className="flex min-h-24 items-center justify-center py-10"
-      >
+        className="flex min-h-0 sm:min-h-24 items-center justify-center py-0 sm:py-10"      >
         {loading ? (
           <span className="text-sm font-bold uppercase">Loading…</span>
         ) : null}

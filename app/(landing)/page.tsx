@@ -1,6 +1,7 @@
 import { TriFergSvg } from "components/store/tri-ferg-svg";
 import Link from "next/link";
 import Footer from "../../components/store/footer";
+import Header from "../../components/store/header";
 
 const navItems = [
   {
@@ -38,7 +39,11 @@ const navItems = [
 
 export default function PalaceLandingPage() {
   return (
+
     <>
+    <div className="sm:hidden block">
+      <Header />
+    </div>
       <main
         role="main"
         id="mainContent"

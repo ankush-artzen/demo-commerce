@@ -201,25 +201,21 @@ export default function CartPageClient() {
                     </div>
                   </div>
 
-                  {cart?.checkoutUrl ? (
-                    <a
-                      aria-label="checkout-btn-link"
-                      href={termsAccepted ? cart.checkoutUrl : undefined}
-                      className={
-                        termsAccepted ? "" : "pointer-events-none"
-                      }
-                      tabIndex={termsAccepted ? 0 : -1}
+                  <a
+                    href={termsAccepted ? cart?.checkoutUrl : undefined}
+                    aria-label="checkout-btn-link"
+                    className={termsAccepted ? "" : "pointer-events-none"}
+                    tabIndex={termsAccepted ? 0 : -1}
+                  >
+                    <button
+                      type="button"
+                      disabled={!termsAccepted}
+                      className="mx-auto mb-[18px] inline-block cursor-pointer items-center justify-center whitespace-nowrap border-2 border-black bg-black px-4 text-center text-base! font-bold uppercase text-white hover:bg-white hover:text-black disabled:cursor-not-allowed disabled:opacity-50 phone:my-1 phone:mb-[18px] phone:h-8 phone:py-1 phone:text-base md:mb-[18px]"
+                      aria-label="checkout-btn"
                     >
-                      <button
-                        type="button"
-                        disabled={!termsAccepted}
-                        className="mx-auto mb-[18px] inline-block cursor-pointer items-center justify-center whitespace-nowrap border-2 border-black bg-black px-4 text-center text-base! font-bold uppercase text-white hover:bg-white hover:text-black disabled:cursor-not-allowed disabled:opacity-50 phone:my-1 phone:mb-[18px] phone:h-8 phone:py-1 phone:text-base md:mb-[18px]"
-                        aria-label="checkout-btn"
-                      >
-                        Checkout
-                      </button>
-                    </a>
-                  ) : null}
+                      Checkout
+                    </button>
+                  </a>
 
                   <div className="mt-1 leading-none text-gray-400">
                     Limited to 1 per size / item

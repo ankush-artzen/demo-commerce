@@ -9,6 +9,7 @@ export type AdviceArticleDetail = {
   title: string;
   image?: { url: string; altText?: string };
   contentHtml?: string;
+  info?: string;
   excerpt?: string;
   youtubeVideoId?: string | null;
   galleryImages?: AdviceGalleryImage[];
