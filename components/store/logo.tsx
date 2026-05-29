@@ -89,9 +89,10 @@ export default function Logo({
       </div>
 
       <div className="w-4/12 phone:w-1/2">
-        <div className="float-right flex translate-y-1/2 items-start gap-1">
+        {/* <div className="float-right flex translate-y-1/2 items-start gap-1"> */}
+        <div className="float-right flex translate-y-1/2">
           {showCart ? <StoreCart /> : null}
-          <button
+          {/* <button
             type="button"
             className="ml-auto pl-2.5 md:invisible md:hidden desktop:invisible desktop:hidden"
             aria-label="mobile-menu-btn"
@@ -113,7 +114,42 @@ export default function Logo({
                 className={`my-[2.5px] w-[22px] bg-black pb-0.5 transition ease-in-out duration-200 transform ${menuOpen ? "-translate-y-[7px] -rotate-45" : ""}`}
               />
             </div>
-          </button>
+          </button> */}
+          <button
+  type="button"
+  className="ml-auto pl-2.5 tablet:invisible tablet:hidden desktop:invisible desktop:hidden"
+  aria-label="mobile-menu-btn"
+  id="mobile-menu-btn"
+  data-menu-open={menuOpen ? "true" : "false"}
+  onClick={toggleMenu}
+>
+  <div
+    className="group right-0 mr-5 flex h-5 flex-col"
+    aria-label="hamburger-button"
+  >
+    <div
+      className={`pb-0.5 w-[22px] my-[3px] bg-black transition ease-in-out transform duration-200 ${
+        menuOpen
+          ? "translate-y-2 rotate-45 group-hover:opacity-100"
+          : ""
+      }`}
+    />
+
+    <div
+      className={`pb-0.5 w-[22px] my-[3px] bg-black transition ease-in-out transform duration-200 ${
+        menuOpen ? "opacity-0" : ""
+      }`}
+    />
+
+    <div
+      className={`pb-0.5 w-[22px] my-[3px] bg-black transition ease-in-out transform duration-200 ${
+        menuOpen
+          ? "-translate-y-2 -rotate-45 group-hover:opacity-100"
+          : ""
+      }`}
+    />
+  </div>
+</button>
         </div>
       </div>
     </header>

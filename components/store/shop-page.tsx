@@ -1,151 +1,60 @@
-// // components/store/ShopPage.tsx
-
-// import Footer from "./footer";
-// import Header from "./header";
-
-// interface ShopPageProps {
-//   name: string;
-//   image: string;
-//   address: string[];
-//   phone?: string;
-//   timing?: string;
-// }
-
-// export default function ShopPage({
-//   name,
-//   image,
-//   address,
-//   phone,
-//   timing,
-// }: ShopPageProps) {
-//   return (
-//     <main className="bg-white text-black">
-//       <Header />
-
-//       <section className="mx-auto flex w-full max-w-[1059px] px-5">
-//         <div className="w-full font-bold uppercase">
-//           <div className="flex justify-between px-16 pb-6 phone:px-0">
-//             {/* Shop Name */}
-//             <div className="text-xl phone:text-md">{name}</div>
-
-//             {/* Address + Details */}
-//             <div className="text-[13px] leading-[18px] font-bold phone:text-xs">
-//               <div>
-//                 {address.map((line, index) => (
-//                   <p key={index}>{line || <span>&nbsp;</span>}</p>
-//                 ))}
-//               </div>
-
-//               {phone && <p>{phone}</p>}
-
-//               {timing && <div>{timing}</div>}
-//             </div>
-//           </div>
-//           {/* Top Info */}
-//           {/* <div className="flex justify-between px-16 pb-6">
-//             {/* Shop Name */}
-//           {/* <div className="text-[20px] leading-none">{name}</div> */}
-
-//           {/* Address */}
-//           {/* <div className="text-start text-[13px] leading-[18px]">
-//               {address.map((line, index) => (
-//                 <p key={index}>{line || <span>&nbsp;</span>}</p>
-//               ))}
-//             </div>
-//           </div> */}
-
-//           {/* Image */}
-//           <div className="flex justify-center">
-//             <img
-//               src={image}
-//               alt={name}
-//               className="
-//                 w-full
-//                 max-w-[812px]"
-//               // object-contain
-//               // duration-75
-//               // ease-in
-//               // hover:opacity-30
-//             />
-//           </div>
-//         </div>
-//       </section>
-
-//       <Footer />
-//     </main>
-//   );
-// }
-
-// components/store/ShopPage.tsx
-
+import type { ShopGalleryImage } from "lib/cms/shops";
 import { Footer2 } from "./footer";
 import Header from "./header";
+import ShopGalleryCarousel from "./shop-gallery-carousel";
 
 interface ShopPageProps {
   name: string;
-  image: string;
+  images: ShopGalleryImage[];
   address: string[];
   phone?: string;
   timing?: string;
+  miscInformationHtml?: string;
 }
 
 export default function ShopPage({
   name,
-  image,
+  images,
   address,
   phone,
   timing,
+  miscInformationHtml,
 }: ShopPageProps) {
   return (
-    <main className="bg-white text-black">
+    <main className="flex min-h-screen flex-col bg-white text-black">
       <Header />
 
-      <section className="mx-auto flex w-full max-w-[1059px] px-5">
-        <div className="w-full font-bold uppercase">
-          {/* <div className="flex justify-between px-15 pb-6 phone:px-0">
-            {/* Shop Name */}
-          {/* <div className="text-xl phone:text-md">{name}</div> */}
+      <div className="flex flex-1 grow justify-center">
+        <div className="mx-5 flex w-full max-w-5xl">
+          <div className="w-full font-bold uppercase" aria-label="shop-view">
+            <div className="flex justify-between px-16 pb-6 phone:px-0">
+              <div className="text-xl phone:text-md">{name}</div>
 
-          {/* Address + Details */}
-          {/* <div className="text-[13px] leading-[18px] font-bold phone:text-xs">
-              <div>
-                {address.map((line, index) => (
-                  <p key={index}>{line || <span>&nbsp;</span>}</p>
-                ))}
+              <div className="text-sm phone:text-xs">
+                <div>
+                  {address.map((line, lineIndex) => (
+                    <p key={lineIndex}>{line || <span>&nbsp;</span>}</p>
+                  ))}
+                </div>
+
+                {phone ? <p>{phone}</p> : null}
+
+                {timing ? <div>{timing}</div> : null}
+
+                {miscInformationHtml ? (
+                  <div
+                
+                    dangerouslySetInnerHTML={{ __html: miscInformationHtml }}
+                  />
+                ) : null}
               </div>
-
-              {phone && <p>{phone}</p>}
-
-              {timing && <div>{timing}</div>}
-            </div> */}
-          {/* </div> */}
-
-          <div className="flex justify-between px-15 pb-6 phone:px-0">
-            {/* Shop Name */}
-            <div className="text-xl leading-[25px] font-bold phone:text-[18px] phone:leading-[25px]">
-              {name}
             </div>
 
-            {/* Address + Details */}
-            <div className="text-[11px] leading-[18px] font-bold sm:text-[13px] phone:leading-[15px]">
-              <div>
-                {address.map((line, index) => (
-                  <p key={index}>{line || <span>&nbsp;</span>}</p>
-                ))}
-              </div>
-
-              {phone && <p>{phone}</p>}
-
-              {timing && <div>{timing}</div>}
-            </div>
-          </div>
-
-          {/* Image */}
-          <div className="flex justify-center">
-            <img src={image} alt={name} className="w-full max-w-[812px]" />
+            <ShopGalleryCarousel images={images} alt={name} />
           </div>
         </div>
-      </section>
+      </div>
+
       <Footer2 />
     </main>
   );

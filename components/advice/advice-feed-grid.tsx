@@ -36,7 +36,8 @@ export function AdviceFeedGrid({
   const [metadata, setMetadata] = useState(initialMetadata);
   const [loading, setLoading] = useState(false);
 
-  const columns = splitIntoColumns(items.map(toCardProps));
+  const cardProps = items.map(toCardProps);
+  const columns = splitIntoColumns(cardProps);
   const hasMore = metadata.hasNextPage;
 
   async function loadMore() {
@@ -66,18 +67,25 @@ export function AdviceFeedGrid({
 
   return (
     <>
+      {/* Mobile: single-column feed */}
       <div
         aria-label="advice-view"
-        className="flex w-full md:mt-14 desktop:mt-14"
+        className="flex w-full min-w-0 flex-col tablet:hidden"
+      >
+        {cardProps.map((item) => (
+          <AdviceCard key={item.href} {...item} layout="mobile" />
+        ))}
+      </div>
+
+      {/* Tablet+: 3-column masonry */}
+      <div
+        aria-label="advice-view"
+        className="hidden w-full min-w-0 tablet:mt-14 tablet:flex desktop:mt-14"
       >
         {columns.map((column, columnIndex) => (
-          <div
-            key={columnIndex}
-            className="flex-1 pl-0"
-            style={{ flex: "1 1 0%", paddingLeft: 0 }}
-          >
+          <div key={columnIndex} className="min-w-0 flex-1 basis-0 pl-0">
             {column.map((item) => (
-              <AdviceCard key={item.href} {...item} />
+              <AdviceCard key={item.href} {...item} layout="desktop" />
             ))}
           </div>
         ))}

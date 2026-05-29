@@ -1,7 +1,8 @@
+import { ArticleDetail } from "../../../../components/advice/article-detail";
 import Footer from "../../../../components/store/footer";
 import Header from "../../../../components/store/header";
-import { ArticleDetail } from "../../../../components/advice/article-detail";
 import { shopifyArticleToDetail } from "lib/get-advice-detail";
+import { getLandingPageData } from "lib/get-landing-page";
 import { fetchShopifyArticleDetail } from "lib/shopify-advice";
 import { notFound } from "next/navigation";
 
@@ -11,7 +12,10 @@ export default async function LookbookArticlePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const article = await fetchShopifyArticleDetail("lookbook", slug);
+  const [article, { headerLinks, footerLinks }] = await Promise.all([
+    fetchShopifyArticleDetail("lookbook", slug),
+    getLandingPageData(),
+  ]);
 
   if (!article) {
     notFound();
@@ -19,9 +23,9 @@ export default async function LookbookArticlePage({
 
   return (
     <>
-      <Header />
+      <Header navItems={headerLinks} />
       <ArticleDetail article={shopifyArticleToDetail(article)} />
-      <Footer />
+      <Footer links={footerLinks} />
     </>
   );
 }

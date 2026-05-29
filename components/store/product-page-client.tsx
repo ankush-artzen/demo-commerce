@@ -57,6 +57,51 @@ function CarouselArrow({ direction }: { direction: "left" | "right" }) {
   );
 }
 
+function ProductHeader({
+  title,
+  price,
+  className = "",
+  withIds = true,
+}: {
+  title: string;
+  price: string;
+  className?: string;
+  withIds?: boolean;
+}) {
+  return (
+    <div
+      aria-label="product-header"
+      className={`w-full select-none uppercase ${className}`}
+      {...(withIds ? { id: "product-header" } : {})}
+    >
+      <h1
+        aria-label="product-title"
+        {...(withIds ? { id: "product-title" } : {})}
+        className="
+          text-[24px]
+          font-bold
+          italic
+          leading-[24px]
+          text-black
+
+          sm:text-[32px]
+          sm:leading-[32px]
+        "
+      >
+        {title}
+      </h1>
+
+      <h3
+        aria-label="product-price"
+        {...(withIds ? { id: "product-price" } : {})}
+        className="mt-2 text-[15px] font-bold"
+      >
+        <span>{price}</span>
+      </h3>
+    </div>
+  );
+}
+
 export default function ProductPageClient({
   product,
   productId,
@@ -95,7 +140,8 @@ export default function ProductPageClient({
   return (
     <>
       <Logo onMenuOpenChange={setMenuOpen} />
-      <div className="mx-auto h-screen w-full max-w-[1400px] overflow-hidden bg-white">
+      {/* <div className="mx-auto h-screen w-full max-w-[1400px] overflow-hidden bg-white"> */}
+      <div className="mx-auto h-screen w-full max-w-[1400px] overflow-y-auto bg-white">
       {/* <div className="mx-auto   w-full max-w-352  min-h-0"> */}
         {/* <div className="mx-auto w-full max-w-[1108px] min-h-0"> */}
         <CategoryNav menuOpen={menuOpen} />
@@ -150,6 +196,17 @@ export default function ProductPageClient({
     phone:flex-col
   "
 >
+  {/* Mobile: title + price above images; desktop unchanged */}
+  {!galleryMode ? (
+    <div className="hidden w-full min-w-0 phone:block phone:px-5">
+      <ProductHeader
+        title={title}
+        price={selectedVariant?.price ?? ""}
+        withIds={false}
+      />
+    </div>
+  ) : null}
+
   {/* LEFT SIDE */}
   {images.length > 0 ? (
     // <div
@@ -188,6 +245,7 @@ export default function ProductPageClient({
           tabIndex={0}
           id="nuka-carousel"
         >
+          
           <div className="relative">
             <div
               ref={carouselRef}
@@ -255,6 +313,7 @@ export default function ProductPageClient({
               </div>
             ) : null}
           </div>
+          
         </div>
       </div>
     </div>
@@ -402,67 +461,15 @@ export default function ProductPageClient({
       phone:px-5
     "
   >
-    {/* HEADER */}
-    <div
-      aria-label="product-header"
-      className="
-        w-full
-        select-none
-        uppercase
-      "
-      id="product-header"
-    >
-      <h1
-        aria-label="product-title"
-        id="product-title"
-        className="
-          text-[24px]
-          font-bold
-          italic
-          leading-[24px]
-          text-black
+    {/* HEADER — desktop only; mobile uses block above images */}
+    <ProductHeader
+      title={title}
+      price={selectedVariant?.price ?? ""}
+      className="phone:hidden"
+    />
 
-          sm:text-[32px]
-          sm:leading-[32px]
-        "
-      >
-        {title}
-      </h1>
-
-      <h3
-        aria-label="product-price"
-        id="product-price"
-        className="mt-2 text-[15px] font-bold"
-      >
-        <span>{selectedVariant?.price ?? ""}</span>
-      </h3>
-    </div>
-
-    {/* DESCRIPTION */}
-    {descriptionLines.length > 0 ? (
-      <div
-        id="product-description"
-        aria-label="product-description"
-        className="
-          mt-5
-          w-full
-          select-none
-          text-sm
-          font-normal
-          uppercase
-          leading-5
-        "
-      >
-        <ul className="list-disc pl-4">
-          {descriptionLines.map((line) => (
-            <li key={line}>{line}</li>
-          ))}
-        </ul>
-      </div>
-    ) : null}
-
-    {/* LINKS */}
-    <div className="mt-5 flex flex-col gap-1">
+    {/* LINKS — desktop: after price; mobile: after description */}
+    <div className="mt-5 flex flex-col gap-0 phone:order-4">
       <button
         type="button"
         className="text-sm uppercase underline hover:text-gray-300 hover:no-underline"
@@ -470,8 +477,6 @@ export default function ProductPageClient({
       >
         Technical Details
       </button>
-</div>
-<div className="flex flex-col gap-1">
       <button
         type="button"
         className="text-sm uppercase underline hover:text-gray-300 hover:no-underline"
@@ -481,7 +486,7 @@ export default function ProductPageClient({
       </button>
     </div>
 
-    {/* ACTIONS */}
+    {/* ACTIONS — mobile: first after product image */}
     {variants.length > 0 ? (
       <div
         aria-label="product-actions-wrapper"
@@ -491,6 +496,9 @@ export default function ProductPageClient({
           w-full
           grid-cols-2
           gap-2
+
+          phone:order-1
+          phone:mt-5
         "
       >
         <div
@@ -549,12 +557,12 @@ export default function ProductPageClient({
       </div>
     ) : null}
 
-    {/* RELATED PRODUCTS */}
+    {/* RELATED PRODUCTS — mobile: after add to cart */}
     {relatedProducts.length > 0 ? (
       <div
         aria-label="product-selector-grid"
         id="product-selector-grid"
-        className="mt-6 w-full"
+        className="mt-6 w-full phone:order-2"
       >
         <div className="grid grid-cols-4 text-center">
           {relatedProducts.map((product) => (
@@ -579,6 +587,31 @@ export default function ProductPageClient({
             </Link>
           ))}
         </div>
+      </div>
+    ) : null}
+
+    {/* DESCRIPTION — mobile: after related products */}
+    {descriptionLines.length > 0 ? (
+      <div
+        id="product-description"
+        aria-label="product-description"
+        className="
+          mt-5
+          w-full
+          select-none
+          text-sm
+          font-normal
+          uppercase
+          leading-5
+
+          phone:order-3
+        "
+      >
+        <ul className="list-disc pl-4">
+          {descriptionLines.map((line) => (
+            <li key={line}>{line}</li>
+          ))}
+        </ul>
       </div>
     ) : null}
   </div>

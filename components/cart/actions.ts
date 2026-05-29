@@ -2,11 +2,11 @@
 
 import { TAGS } from "lib/constants";
 import {
-    addToCart,
-    createCart,
-    getCart,
-    removeFromCart,
-    updateCart,
+  addToCart,
+  createCart,
+  getCart,
+  removeFromCart,
+  updateCart,
 } from "lib/shopify";
 import { updateTag } from "next/cache";
 import { cookies } from "next/headers";
@@ -32,11 +32,6 @@ export async function addVariantToCart(
   }
 
   try {
-    const cookieStore = await cookies();
-    if (!cookieStore.get("cartId")?.value) {
-      const cart = await createCart();
-      cookieStore.set("cartId", cart.id!);
-    }
     await addToCart([{ merchandiseId: variantId, quantity: 1 }]);
     updateTag(TAGS.cart);
     return {};
@@ -131,11 +126,18 @@ export async function updateItemQuantity(
 }
 
 export async function redirectToCheckout() {
-  let cart = await getCart();
-  redirect(cart!.checkoutUrl);
+  const cart = await getCart();
+  if (!cart?.checkoutUrl || cart.lines.length === 0) {
+    (await cookies()).delete("cartId");
+    updateTag(TAGS.cart);
+    redirect("/cart");
+  }
+  redirect(cart.checkoutUrl);
 }
 
 export async function createCartAndSetCookie() {
-  let cart = await createCart();
+  (await cookies()).delete("cartId");
+  const cart = await createCart();
   (await cookies()).set("cartId", cart.id!);
+  updateTag(TAGS.cart);
 }

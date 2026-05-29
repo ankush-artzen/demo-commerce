@@ -260,14 +260,45 @@ export async function createCart(): Promise<Cart> {
   return reshapeCart(res.body.data.cartCreate.cart);
 }
 
+async function fetchCartById(cartId: string): Promise<Cart | undefined> {
+  const res = await shopifyFetch<ShopifyCartOperation>({
+    query: getCartQuery,
+    variables: { cartId },
+  });
+
+  if (!res.body.data.cart) {
+    return undefined;
+  }
+
+  return reshapeCart(res.body.data.cart);
+}
+
+/** Returns a valid cart, replacing the cookie when the stored cart was completed. */
+export async function ensureActiveCart(): Promise<Cart> {
+  const cookieStore = await cookies();
+  const cartId = cookieStore.get("cartId")?.value;
+
+  if (cartId) {
+    const cart = await fetchCartById(cartId);
+    if (cart) {
+      return cart;
+    }
+    cookieStore.delete("cartId");
+  }
+
+  const cart = await createCart();
+  cookieStore.set("cartId", cart.id!);
+  return cart;
+}
+
 export async function addToCart(
   lines: { merchandiseId: string; quantity: number }[]
 ): Promise<Cart> {
-  const cartId = (await cookies()).get("cartId")?.value!;
+  const cart = await ensureActiveCart();
   const res = await shopifyFetch<ShopifyAddToCartOperation>({
     query: addToCartMutation,
     variables: {
-      cartId,
+      cartId: cart.id!,
       lines,
     },
   });
@@ -275,11 +306,11 @@ export async function addToCart(
 }
 
 export async function removeFromCart(lineIds: string[]): Promise<Cart> {
-  const cartId = (await cookies()).get("cartId")?.value!;
+  const cart = await ensureActiveCart();
   const res = await shopifyFetch<ShopifyRemoveFromCartOperation>({
     query: removeFromCartMutation,
     variables: {
-      cartId,
+      cartId: cart.id!,
       lineIds,
     },
   });
@@ -290,11 +321,11 @@ export async function removeFromCart(lineIds: string[]): Promise<Cart> {
 export async function updateCart(
   lines: { id: string; merchandiseId: string; quantity: number }[]
 ): Promise<Cart> {
-  const cartId = (await cookies()).get("cartId")?.value!;
+  const cart = await ensureActiveCart();
   const res = await shopifyFetch<ShopifyUpdateCartOperation>({
     query: editCartItemsMutation,
     variables: {
-      cartId,
+      cartId: cart.id!,
       lines,
     },
   });
@@ -313,17 +344,15 @@ export async function getCart(): Promise<Cart | undefined> {
     return undefined;
   }
 
-  const res = await shopifyFetch<ShopifyCartOperation>({
-    query: getCartQuery,
-    variables: { cartId },
-  });
+  const cart = await fetchCartById(cartId);
 
-  // Old carts becomes `null` when you checkout.
-  if (!res.body.data.cart) {
+  // Completed checkouts return null — cookie is cleared in Server Actions
+  // (ensureActiveCart, createCartAndSetCookie) where writes are allowed.
+  if (!cart) {
     return undefined;
   }
 
-  return reshapeCart(res.body.data.cart);
+  return cart;
 }
 
 export async function getCollection(

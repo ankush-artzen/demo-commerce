@@ -55,43 +55,57 @@
 // components/store/footer.tsx
 
 import Link from "next/link";
+import type { LandingLink } from "lib/landing-types";
 
-const footerLinks = [
+const defaultFooterLinks: LandingLink[] = [
   {
     label: "Instagram",
     href: "https://instagram.com/palaceskateboards",
+    external: true,
   },
   {
     label: "TikTok",
     href: "https://www.tiktok.com/@palaceskateboards",
+    external: true,
   },
   {
     label: "Apple Music",
     href: "https://apple.co/palace",
+    external: true,
   },
   {
     label: "YouTube",
     href: "https://www.youtube.com/channel/UCADVAEBl9ZZ9gFOwURmm2kA",
+    external: true,
   },
   {
     label: "WeChat",
     href: "/wechat",
+    external: false,
   },
   {
     label: "Weibo",
     href: "https://weibo.com/u/7322458413",
+    external: true,
   },
   {
     label: "Mailing List",
     href: "https://mailing-list.palaceskateboards.com",
+    external: true,
   },
   {
     label: "Boring Stuff",
     href: "https://boring.palaceskateboards.com/",
+    external: true,
   },
 ];
 
-export default function Footer() {
+type FooterProps = {
+  links?: LandingLink[];
+};
+
+export default function Footer({ links = defaultFooterLinks }: FooterProps) {
+  const footerLinks = links;
   return (
     <footer
       aria-label="footer"
@@ -133,8 +147,8 @@ export default function Footer() {
             >
               <Link
                 href={item.href}
-                target={item.href.startsWith("http") ? "_blank" : undefined}
-                rel={item.href.startsWith("http") ? "noreferrer" : undefined}
+                target={item.external ? "_blank" : undefined}
+                rel={item.external ? "noreferrer" : undefined}
               >
                 {item.label}
               </Link>
@@ -146,7 +160,9 @@ export default function Footer() {
   );
 }
 
-export function Footer2() {
+export function Footer2({ links = defaultFooterLinks }: FooterProps) {
+  const footerLinks = links;
+
   return (
     <footer
       aria-label="footer"
@@ -190,8 +206,8 @@ export function Footer2() {
             >
               <Link
                 href={item.href}
-                target={item.href.startsWith("http") ? "_blank" : undefined}
-                rel={item.href.startsWith("http") ? "noreferrer" : undefined}
+                target={item.external ? "_blank" : undefined}
+                rel={item.external ? "noreferrer" : undefined}
               >
                 {item.label}
               </Link>

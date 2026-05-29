@@ -1,49 +1,17 @@
 import { TriFergSvg } from "components/store/tri-ferg-svg";
+import Footer from "components/store/footer";
+import Header from "components/store/header";
+import { getLandingPageData } from "lib/get-landing-page";
 import Link from "next/link";
-import Footer from "../../components/store/footer";
-import Header from "../../components/store/header";
 
-const navItems = [
-  {
-    title: "Shops",
-    href: "/shops",
-    fillClass: "fill-tri-ferg-red",
-    ariaLabel: "shops-tri-ferg-link",
-  },
-  {
-    title: "Web Shop",
-    href: "/collections/all",
-    fillClass: "fill-tri-ferg-grey",
-    ariaLabel: "web-shop-tri-ferg-link",
-  },
-  {
-    title: "PALACE SHANGHAI",
-    href: "/advice/palace-shanghai",
-    fillClass: "fill-tri-ferg-blue",
-    ariaLabel: "latest-advice-tri-ferg-link",
-  },
-  {
-    title: "Advice",
-    href: "/advice",
-    fillClass: "",
-    ariaLabel: "advice-tri-ferg-link",
-  },
-  {
-    title: "Manor Place",
-    href: "https://manorplace.com",
-    fillClass: "fill-tri-ferg-lime-green",
-    ariaLabel: "manor-place-tri-ferg-link",
-    external: true,
-  },
-] as const;
+export default async function PalaceLandingPage() {
+  const { triFergNav, headerLinks, footerLinks } = await getLandingPageData();
 
-export default function PalaceLandingPage() {
   return (
-
     <>
-    <div className="sm:hidden block">
-      <Header />
-    </div>
+      <div className="block sm:hidden">
+        <Header navItems={headerLinks} />
+      </div>
       <main
         role="main"
         id="mainContent"
@@ -51,21 +19,17 @@ export default function PalaceLandingPage() {
       >
         <div className="mx-5 flex w-full max-w-5xl">
           <div
-            className="relative flex w-full flex-1 grow flex-col justify-center px-5 phone:px-0"
+            className="relative flex w-full mt-10 sm:mt-0 flex-1 grow flex-col justify-center px-5 phone:px-0"
             aria-label="index-view"
           >
             <nav className="flex flex-row justify-center space-x-10 pt-5 font-bold uppercase phone:flex-col phone:items-center phone:space-x-0 phone:space-y-2 phone:pt-0">
-              {navItems.map((item) => (
+              {triFergNav.map((item) => (
                 <Link
                   key={item.ariaLabel}
                   href={item.href}
                   aria-label={item.ariaLabel}
-                  target={"external" in item && item.external ? "_blank" : undefined}
-                  rel={
-                    "external" in item && item.external
-                      ? "noopener noreferrer"
-                      : undefined
-                  }
+                  target={item.external ? "_blank" : undefined}
+                  rel={item.external ? "noopener noreferrer" : undefined}
                   className={`group relative block w-56 phone:w-24 ${item.fillClass}`}
                 >
                   <div
@@ -83,7 +47,9 @@ export default function PalaceLandingPage() {
           </div>
         </div>
       </main>
-      <Footer />
+      <div className="mt-15.5 sm:mt-0">
+        <Footer links={footerLinks} />
+      </div>
     </>
   );
 }

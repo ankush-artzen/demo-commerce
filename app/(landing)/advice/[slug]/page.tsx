@@ -1,4 +1,5 @@
 import { getAdviceDetail } from "lib/get-advice-detail";
+import { getLandingPageData } from "lib/get-landing-page";
 import { notFound } from "next/navigation";
 import { ArticleDetail } from "../../../../components/advice/article-detail";
 import Footer from "../../../../components/store/footer";
@@ -10,7 +11,10 @@ export default async function AdviceArticlePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const article = await getAdviceDetail(slug);
+  const [article, { headerLinks, footerLinks }] = await Promise.all([
+    getAdviceDetail(slug),
+    getLandingPageData(),
+  ]);
 
   if (!article) {
     notFound();
@@ -18,9 +22,9 @@ export default async function AdviceArticlePage({
 
   return (
     <>
-      <Header />
+      <Header navItems={headerLinks} />
       <ArticleDetail article={article} />
-      <Footer />
+      <Footer links={footerLinks} />
     </>
   );
 }

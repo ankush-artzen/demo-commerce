@@ -1,22 +1,24 @@
+import { AdviceFeedGrid } from "../../../components/advice/advice-feed-grid";
 import Footer from "../../../components/store/footer";
 import Header from "../../../components/store/header";
-import { AdviceFeedGrid } from "../../../components/advice/advice-feed-grid";
 import { getAdviceFeed } from "lib/get-advice-feed";
+import { getLandingPageData } from "lib/get-landing-page";
 
 export default async function AdvicePage() {
-  const { adviceFeed, adviceFeedMetadata } = await getAdviceFeed();
+  const [{ adviceFeed, adviceFeedMetadata }, { headerLinks, footerLinks }] =
+    await Promise.all([getAdviceFeed(), getLandingPageData()]);
 
   return (
     <>
-      <Header />
+      <Header navItems={headerLinks} />
 
       <main
         role="main"
         id="mainContent"
-        className="flex flex-1 grow justify-center"
+        className="flex w-full min-w-0 flex-1 grow justify-center overflow-x-hidden"
       >
-        <div className="mx-5 flex w-full max-w-5xl">
-          <div className="block w-full">
+        <div className="mx-5 flex w-full min-w-0 max-w-5xl">
+          <div className="block min-w-0 w-full">
             <AdviceFeedGrid
               initialFeed={adviceFeed}
               initialMetadata={adviceFeedMetadata}
@@ -25,7 +27,7 @@ export default async function AdvicePage() {
         </div>
       </main>
 
-      <Footer />
+      <Footer links={footerLinks} />
     </>
   );
 }

@@ -128,93 +128,65 @@
 import Link from "next/link";
 import Footer from "../../../components/store/footer";
 import Header from "../../../components/store/header";
+import { getAllShops, isDatoCmsConfigured } from "lib/cms/datocms";
+import { shopCoverSrc } from "lib/cms/shops";
+import { getLandingPageData } from "lib/get-landing-page";
 
-const shops = [
-  {
-    title: "London Shop",
-    image: "/images/london-1.avif",
-    link: "/shops/shop1",
-  },
-  {
-    title: "New York Shop",
-    image: "/images/new-york-1.avif",
-    link: "/shops/shop2",
-  },
-  {
-    title: "Tokyo Shop",
-    image: "/images/tokyo-1.avif",
-    link: "/shops/shop3",
-  },
-  {
-    title: "Los Angeles Shop",
-    image: "/images/los-angeles-10.avif",
-    link: "/shops/shop4",
-  },
-  {
-    title: "Apgujeong Shop",
-    image: "/images/apgujeong-2.avif",
-    link: "/shops/shop5",
-  },
-  {
-    title: "Hongdae Shop",
-    image: "/images/hongdae-4.avif",
-    link: "/shops/shop6",
-  },
-  {
-    title: "Osaka Shop",
-    image: "/images/osaka-6.avif",
-    link: "/shops/shop7",
-  },
-  {
-    title: "Fukuoka Shop",
-    image: "/images/fukuoka.avif",
-    link: "/shops/shop8",
-  },
-  {
-    title: "Manor Place Shop",
-    image: "/images/manorplace.avif",
-    link: "/shops/shop9",
-  },
-  {
-    title: "Hong Kong Shop",
-    image: "/images/hongkong.avif",
-    link: "/shops/shop10",
-  },
-  {
-    title: "DSM London Concession",
-    image: "/images/london.avif",
-    link: "/shops/shop11",
-  },
-  {
-    title: "DSM LA Concession",
-    image: "/images/dsmla.avif",
-    link: "/shops/shop12",
-  },
-  {
-    title: "DSM Ginza Concession",
-    image: "/images/dsmginza.avif",
-    link: "/shops/shop13",
-  },
-];
+export default async function Page() {
+  const { headerLinks, footerLinks } = await getLandingPageData();
 
-export default function Page() {
+  let emptyMessage: string | null = null;
+  let records: Awaited<ReturnType<typeof getAllShops>> = [];
+
+  if (!isDatoCmsConfigured()) {
+    emptyMessage =
+      "Shops are not configured. Add DATOCMS_API_TOKEN to your .env.local file.";
+  } else {
+    try {
+      records = await getAllShops();
+    } catch (error) {
+      console.error("Failed to fetch shops from DatoCMS:", error);
+      const detail =
+        error instanceof Error ? error.message : "Unknown error";
+      emptyMessage =
+        process.env.NODE_ENV === "development"
+          ? `Failed to load shops: ${detail}`
+          : "Unable to load shops right now.";
+    }
+  }
+
+  if (!emptyMessage && records.length === 0) {
+    emptyMessage =
+      "Currently no shop added. Publish at least one shop in DatoCMS.";
+  }
+
+  const shops = records.map((shop) => ({
+    title: shop.title,
+    image: shopCoverSrc(shop),
+    link: `/shops/${shop.slug}`,
+  }));
   return (
-    <main
-      role="main"
-      id="mainContent"
-      className="flex min-h-screen flex-col bg-white text-black"
-    >
-      <Header />
-
-      <div className="flex flex-1 grow justify-center">
+    <>
+      <Header navItems={headerLinks} />
+      <main
+        role="main"
+        id="mainContent"
+        className="flex min-h-screen flex-col bg-white text-black"
+      >
+        <div className="flex flex-1 grow justify-center">
         <div className="mx-5 flex w-full max-w-5xl">
           <div
             className="flex w-full flex-wrap max-md:flex-col"
             aria-label="shops-view"
           >
+            {emptyMessage ? (
+              <p className="w-full py-16 text-center text-sm font-bold uppercase tracking-tight">
+                {emptyMessage}
+              </p>
+            ) : null}
             {shops.map((shop) => (
               <Link
-                key={shop.title}
+                key={shop.link}
                 href={shop.link}
                 aria-label={shop.title}
                 className="mb-2.5 px-2.5 max-md:mb-5 w-1/2 max-md:w-full"
@@ -254,10 +226,11 @@ export default function Page() {
     max-md:h-60
   "
                 >
-                  <img
-                    src={shop.image}
-                    alt={shop.title}
-                    className="
+                  {shop.image ? (
+                    <img
+                      src={shop.image}
+                      alt={shop.title}
+                      className="
       absolute
       inset-0
       h-full
@@ -267,7 +240,8 @@ export default function Page() {
       transition-opacity
       duration-500
     "
-                  />
+                    />
+                  ) : null}
                 </div>
 
                 {/* <div
@@ -317,9 +291,10 @@ export default function Page() {
             ))}
           </div>
         </div>
-      </div>
+        </div>
 
-      <Footer />
-    </main>
+        <Footer links={footerLinks} />
+      </main>
+    </>
   );
 }

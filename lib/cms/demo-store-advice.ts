@@ -38,11 +38,22 @@ function recordToFeedItem(record: DatoDemoStoreRecord): AdviceFeedItem | null {
     height,
     aspectRatio: width / height,
     contentType: "advice",
+    publishedAt: record.updatedAt ?? undefined,
   };
 }
 
+function sortByNewest(
+  records: DatoDemoStoreRecord[],
+): DatoDemoStoreRecord[] {
+  return [...records].sort((a, b) => {
+    const aTime = a.updatedAt ? Date.parse(a.updatedAt) : 0;
+    const bTime = b.updatedAt ? Date.parse(b.updatedAt) : 0;
+    return bTime - aTime;
+  });
+}
+
 export async function fetchDatoAdviceFeed(): Promise<AdviceFeedResponse> {
-  const records = await getAllDemoStores();
+  const records = sortByNewest(await getAllDemoStores());
   const adviceFeed = records.flatMap((record) => {
     const item = recordToFeedItem(record);
     return item ? [item] : [];
