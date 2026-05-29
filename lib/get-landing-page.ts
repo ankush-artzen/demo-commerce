@@ -204,10 +204,11 @@ async function loadLandingPageData(): Promise<LandingPageData> {
     (latestAdvice ? feedItemToFeatured(latestAdvice) : null);
 
   if (featured && latestAdvice) {
+    const featuredArticle = featured;
     const matched = adviceFeed.adviceFeed.find(
       (item) =>
-        item.slug === featured.href.replace(/^\/advice\//, "") ||
-        item.title.toLowerCase() === featured.title.toLowerCase(),
+        item.slug === featuredArticle.href.replace(/^\/advice\//, "") ||
+        item.title.toLowerCase() === featuredArticle.title.toLowerCase(),
     );
     if (matched) {
       featured = {
