@@ -3,45 +3,132 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
 type DatoWebhookBody = {
-  cache_tags?: string[];
+  cache_tags?: unknown;
   entity?: {
-    attributes?: { slug?: string };
+    attributes?: { slug?: unknown };
   };
 };
 
-export async function POST(req: NextRequest): Promise<NextResponse> {
-  const secret =
-    req.headers.get("x-datocms-webhook-secret") ??
-    req.nextUrl.searchParams.get("secret");
+const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
-  if (!secret || secret !== process.env.DATOCMS_WEBHOOK_SECRET) {
+function webhookSecret(): string | undefined {
+  return process.env.DATOCMS_WEBHOOK_SECRET?.trim() || undefined;
+}
+
+function readSecret(req: NextRequest): string | undefined {
+  return (
+    req.headers.get("x-datocms-webhook-secret")?.trim() ||
+    req.nextUrl.searchParams.get("secret")?.trim() ||
+    undefined
+  );
+}
+
+function normalizeCacheTags(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+
+  return value
+    .filter((tag): tag is string => typeof tag === "string")
+    .map((tag) => tag.trim())
+    .filter(Boolean);
+}
+
+function normalizeSlug(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+
+  const slug = value.trim().toLowerCase();
+  if (!slug || !SLUG_PATTERN.test(slug)) return undefined;
+
+  return slug;
+}
+
+async function parseBody(req: NextRequest): Promise<DatoWebhookBody> {
+  try {
+    const text = await req.text();
+    if (!text) return {};
+    return JSON.parse(text) as DatoWebhookBody;
+  } catch {
+    return {};
+  }
+}
+
+function safeRevalidateTag(tag: string): boolean {
+  try {
+    revalidateTag(tag, "seconds");
+    return true;
+  } catch (error) {
+    console.error("[revalidate-dato] revalidateTag failed:", tag, error);
+    return false;
+  }
+}
+
+function safeRevalidatePath(path: string): boolean {
+  try {
+    revalidatePath(path);
+    return true;
+  } catch (error) {
+    console.error("[revalidate-dato] revalidatePath failed:", path, error);
+    return false;
+  }
+}
+
+export async function POST(req: NextRequest): Promise<NextResponse> {
+  const configuredSecret = webhookSecret();
+  if (!configuredSecret) {
+    return NextResponse.json(
+      { error: "Webhook not configured", revalidated: false },
+      { status: 503 },
+    );
+  }
+
+  const secret = readSecret(req);
+  if (!secret || secret !== configuredSecret) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  let body: DatoWebhookBody = {};
   try {
-    body = (await req.json()) as DatoWebhookBody;
-  } catch {
-    // Record-update webhooks may send an empty body.
-  }
+    const body = await parseBody(req);
+    const cacheTags = normalizeCacheTags(body.cache_tags);
+    const slug = normalizeSlug(body.entity?.attributes?.slug);
 
-  if (body.cache_tags?.length) {
-    for (const tag of body.cache_tags) {
-      revalidateTag(tag);
+    const revalidatedTags: string[] = [];
+    const failedTags: string[] = [];
+    const revalidatedPaths: string[] = [];
+    const failedPaths: string[] = [];
+
+    for (const tag of cacheTags) {
+      (safeRevalidateTag(tag) ? revalidatedTags : failedTags).push(tag);
     }
+
+    const globalTag = datoCacheTag();
+    (safeRevalidateTag(globalTag) ? revalidatedTags : failedTags).push(
+      globalTag,
+    );
+
+    const paths = ["/advice"];
+    if (slug) paths.push(`/advice/${slug}`);
+
+    for (const path of paths) {
+      (safeRevalidatePath(path) ? revalidatedPaths : failedPaths).push(path);
+    }
+
+    const hasFailures = failedTags.length > 0 || failedPaths.length > 0;
+
+    return NextResponse.json({
+      revalidated: !hasFailures,
+      partial: hasFailures && (revalidatedTags.length > 0 || revalidatedPaths.length > 0),
+      slug: slug ?? null,
+      revalidatedTags,
+      revalidatedPaths,
+      ...(failedTags.length ? { failedTags } : {}),
+      ...(failedPaths.length ? { failedPaths } : {}),
+      now: Date.now(),
+    });
+  } catch (error) {
+    console.error("[revalidate-dato] unhandled error:", error);
+
+    return NextResponse.json(
+      { error: "Revalidation failed", revalidated: false },
+      { status: 500 },
+    );
   }
-
-  revalidateTag(datoCacheTag());
-  revalidatePath("/advice");
-
-  const slug = body.entity?.attributes?.slug;
-  if (slug) {
-    revalidatePath(`/advice/${slug}`);
-  }
-
-  return NextResponse.json({
-    revalidated: true,
-    slug: slug ?? null,
-    now: Date.now(),
-  });
 }
