@@ -1,5 +1,6 @@
 import CollectionPageClient from "components/store/collection-page-client";
 import type { PageInfo, Product } from "lib/shopify/types";
+import { Suspense } from "react";
 
 export default function CollectionPageLayout({
   collection,
@@ -11,10 +12,12 @@ export default function CollectionPageLayout({
   pageInfo: PageInfo;
 }) {
   return (
-    <CollectionPageClient
-      collection={collection}
-      initialProducts={products}
-      initialPageInfo={pageInfo}
-    />
+    <Suspense fallback={null}>
+      <CollectionPageClient
+        collection={collection}
+        initialProducts={products}
+        initialPageInfo={pageInfo}
+      />
+    </Suspense>
   );
 }

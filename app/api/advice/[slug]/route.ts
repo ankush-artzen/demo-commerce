@@ -1,11 +1,7 @@
-import {
-  fetchDatoAdviceBySlug,
-  isDatoCmsConfigured,
-} from "lib/cms/demo-store-advice";
-import { fetchShopifyAdviceBySlug } from "lib/shopify-advice";
+import { getAdviceDetail } from "lib/get-advice-detail";
 import { NextRequest, NextResponse } from "next/server";
 
-export const revalidate = 300;
+export const dynamic = "force-dynamic";
 
 export async function GET(
   _req: NextRequest,
@@ -14,9 +10,7 @@ export async function GET(
   const { slug } = await params;
 
   try {
-    const item = isDatoCmsConfigured()
-      ? await fetchDatoAdviceBySlug(slug)
-      : await fetchShopifyAdviceBySlug(slug);
+    const item = await getAdviceDetail(slug);
 
     if (!item) {
       return NextResponse.json({ error: "Advice not found" }, { status: 404 });

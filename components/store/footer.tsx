@@ -109,41 +109,14 @@ export default function Footer({ links = defaultFooterLinks }: FooterProps) {
   return (
     <footer
       aria-label="footer"
-      className="
-        mx-5
-        flex
-        justify-center
-        pt-4
-        uppercase
-        phone:block
-        phone:max-h-44
-        phone:pt-6
-      "
+      className="mx-5 block max-h-44 justify-center pt-6 uppercase md:flex md:max-h-none md:pt-4"
     >
-      <div className="w-full max-w-5xl pb-8 phone:block phone:pb-2">
-        <ul
-          className="
-            flex
-            justify-center
-            text-sm
-            font-bold
-            phone:grid
-            phone:grid-cols-2
-            phone:text-xs
-          "
-        >
+      <div className="w-full max-w-5xl pb-2 md:pb-8">
+        <ul className="grid grid-cols-2 justify-center text-xs font-bold md:flex md:text-sm">
           {footerLinks.map((item, index) => (
             <li
               key={index}
-              className="
-                flex
-                justify-center
-                px-3
-                hover:underline
-                phone:w-full
-                phone:p-0
-                phone:pb-3
-              "
+              className="flex w-full justify-center p-0 pb-3 hover:underline md:w-auto md:px-3 md:pb-0"
             >
               <Link
                 href={item.href}

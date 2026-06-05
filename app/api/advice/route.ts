@@ -1,11 +1,11 @@
 import {
-  fetchDatoAdviceFeed,
-  isDatoCmsConfigured,
+    fetchDatoAdviceFeed,
+    isDatoCmsConfigured,
 } from "lib/cms/demo-store-advice";
 import { fetchShopifyAdviceFeed } from "lib/shopify-advice";
 import { NextRequest, NextResponse } from "next/server";
 
-export const revalidate = 300;
+export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
   try {

@@ -1,8 +1,8 @@
 import { gql } from "graphql-request";
 import {
-  getDatoClient,
-  isDatoCmsConfigured,
-  type DatoResponsiveImage,
+    datoRequest,
+    isDatoCmsConfigured,
+    type DatoResponsiveImage
 } from "lib/cms/datocms";
 import type { LandingFeaturedContent, LandingLink } from "lib/landing-types";
 
@@ -88,11 +88,13 @@ export async function getDatoLandingPageContent(): Promise<DatoLandingPageConten
   if (!isDatoCmsConfigured()) return null;
 
   try {
-    const data = await getDatoClient().request<{
+    const data = await datoRequest<{
       homepage: DatoHomepageRaw | null;
     }>(homepageQuery);
 
-    return normalizeHomepage(data.homepage);
+    const normalized = normalizeHomepage(data.homepage);
+    console.log("[datoCMS homepage]", { raw: data.homepage, normalized });
+    return normalized;
   } catch (error) {
     if (isMissingHomepageModel(error)) {
       return null;

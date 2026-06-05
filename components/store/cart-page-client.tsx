@@ -36,7 +36,7 @@ function CartLineRow({ line }: { line: CartItem }) {
   return (
     <div
       aria-label={line.merchandise.product.handle}
-      className="flex border-b border-black uppercase phone:min-h-28 phone:pb-3"
+      className="flex border-b uppercase phone:min-h-28 phone:pb-3"
     >
       <div className="w-1/5 phone:w-[32%]">
         <Link href={`/product/${line.merchandise.product.handle}`}>
@@ -120,7 +120,7 @@ export default function CartPageClient() {
         <main
           role="main"
           id="mainContent"
-          className="mt-5 h-[calc(100vh-130px)] min-h-0 w-9/12 overflow-y-auto phone:h-auto phone:overflow-y-visible phone:float-none phone:mt-0 phone:w-full  phone:-translate-x-0 ease-out duration-300"
+          className="sm:mt-3 mt-5 h-[calc(100vh-130px)] min-h-0 w-9/12 overflow-y-auto phone:h-auto phone:overflow-y-visible phone:float-none phone:mt-0 phone:w-full  phone:-translate-x-0 ease-out duration-300"
         >
           <div
             id="cart-view"
@@ -169,7 +169,7 @@ export default function CartPageClient() {
                           onChange={(event) =>
                             setTermsAccepted(event.target.checked)
                           }
-                          className="peer relative mt-px size-4 shrink-0 cursor-pointer appearance-none rounded-none border-2 border-black bg-white align-sub checked:border-0 checked:bg-black"
+                          className="peer relative mt-px size-4 shrink-0 cursor-pointer appearance-none rounded-none border-2 bg-white align-sub checked:border-0 checked:bg-black"
                         />
                         <label
                           htmlFor="terms-checkbox"
@@ -210,7 +210,7 @@ export default function CartPageClient() {
                     <button
                       type="button"
                       disabled={!termsAccepted}
-                      className="mx-auto mb-[18px] inline-block cursor-pointer items-center justify-center whitespace-nowrap border-2 border-black bg-black px-4 text-center text-base! font-bold uppercase text-white hover:bg-white hover:text-black disabled:cursor-not-allowed disabled:opacity-50 phone:my-1 phone:mb-[18px] phone:h-8 phone:py-1 phone:text-base md:mb-[18px]"
+                      className="mx-auto mb-[18px] inline-block cursor-pointer items-center justify-center whitespace-nowrap border-2 bg-black px-4 text-center text-sm font-bold uppercase text-white hover:bg-white hover:text-black phone:my-1 phone:h-8 phone:py-1 phone:text-base text-base! disabled:cursor-not-allowed phone:mb-[18px] tablet:mb-[18px]"
                       aria-label="checkout-btn"
                     >
                       Checkout

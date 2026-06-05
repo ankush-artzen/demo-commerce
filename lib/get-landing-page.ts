@@ -198,6 +198,8 @@ async function loadLandingPageData(): Promise<LandingPageData> {
     getAdviceFeed(),
   ]);
 
+  console.log("[landing page datoCMS]", { cmsLanding, adviceFeed });
+
   const latestAdvice = adviceFeed.adviceFeed[0];
   let featured =
     cmsLanding?.featured ??

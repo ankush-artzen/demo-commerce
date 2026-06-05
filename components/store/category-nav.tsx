@@ -58,7 +58,10 @@ export default function CategoryNav({
           </li>
         ) : null}
         {onFilterClick ? (
-          <li aria-label="menu-item-filter" className="pt-10">
+          <li
+            aria-label="menu-item-filter"
+            className="pt-10 phone:invisible phone:hidden"
+          >
             <button
               type="button"
               aria-label="filter-button"

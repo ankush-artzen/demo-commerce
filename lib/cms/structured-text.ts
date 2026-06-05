@@ -110,3 +110,54 @@ export function structuredTextToHtml(
   walkDast(document.children, parts);
   return parts.length ? parts.join("") : undefined;
 }
+
+function inlineNodesToPlain(nodes: DastNode[] | undefined): string {
+  if (!nodes) return "";
+
+  let text = "";
+  for (const node of nodes) {
+    if (node.type === "span" && typeof node.value === "string") {
+      text += node.value;
+      continue;
+    }
+
+    if (node.type === "link" && node.url) {
+      const label = inlineNodesToPlain(node.children) || node.url;
+      text += label;
+      continue;
+    }
+
+    if (node.children) {
+      text += inlineNodesToPlain(node.children);
+    }
+  }
+
+  return text;
+}
+
+function walkDastPlain(nodes: DastNode[] | undefined, parts: string[]) {
+  if (!nodes) return;
+
+  for (const node of nodes) {
+    if (node.type === "paragraph" || node.type === "heading") {
+      const content = inlineNodesToPlain(node.children).trim();
+      if (content) parts.push(content);
+      continue;
+    }
+
+    walkDastPlain(node.children, parts);
+  }
+}
+
+export function structuredTextToPlain(
+  value: unknown,
+): string | undefined {
+  if (!value || typeof value !== "object") return undefined;
+
+  const document = (value as { document?: DastNode }).document;
+  if (!document?.children) return undefined;
+
+  const parts: string[] = [];
+  walkDastPlain(document.children, parts);
+  return parts.length ? parts.join("\n") : undefined;
+}

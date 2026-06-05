@@ -44,9 +44,9 @@ export default function ProductPageAddToCart({
       return;
     }
 
-    addCartItem(selectedVariant, product);
-
     startTransition(async () => {
+      addCartItem(selectedVariant, product);
+
       const result = await addVariantToCart(selectedVariantId);
       if (result.error) {
         setError(result.error);

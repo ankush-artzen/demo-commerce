@@ -188,7 +188,7 @@ export default function StoreCart() {
   aria-label="cart"
   className="
     ml-2
-    w-[120px]
+    w-[110px]
     select-none
     text-[11px]
     leading-[15px]
@@ -206,7 +206,8 @@ export default function StoreCart() {
       block
       w-full
       bg-black
-      py-[1px]
+      py-1
+      sm:py-[0px]
       text-center
       uppercase
       text-white

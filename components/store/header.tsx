@@ -1,8 +1,8 @@
 "use client";
 
+import type { LandingLink } from "lib/landing-types";
 import Image from "next/image";
 import Link from "next/link";
-import type { LandingLink } from "lib/landing-types";
 import { useEffect, useState } from "react";
 
 const defaultNavItems: LandingLink[] = [
@@ -18,7 +18,7 @@ const defaultNavItems: LandingLink[] = [
 ];
 
 const mobileLinkClass =
-  "block py-2 text-[14px] font-bold leading-[1.125rem] no-underline text-black";
+  "block py-2 text-sm font-bold leading-4.5 no-underline text-black";
 
 function menuItemTestId(label: string) {
   return `menu-item-${label.toLowerCase()}`;
@@ -59,16 +59,14 @@ export default function Header({
     <>
       <header
         aria-label="header"
-        className={`flex min-h-24 justify-center uppercase phone:min-h-20 ${
-          landing
-            ? "md:invisible md:hidden desktop:invisible desktop:hidden"
-            : ""
+        className={`flex min-h-20 justify-center uppercase md:min-h-24 ${
+          landing ? "md:invisible md:hidden" : ""
         } ${menuElevated ? "relative z-30 bg-white" : ""}`}
       >
-        <div className="mx-5 mt-3.5 flex w-full max-w-5xl items-start phone:items-center phone:mt-1.5 phone:mb-2.5">
+        <div className="mx-5 mt-1.5 mb-2.5 flex w-full max-w-5xl items-center md:mt-3.5 md:mb-0 md:items-start">
           <Link href="/" aria-label="black-april-logo">
             <div
-              className="relative bottom-[2px] block h-[71px] w-44 transition-opacity duration-150 ease-in-out hover:opacity-25 sm:bottom-[12px]"
+              className="relative block h-16 w-54 transition-opacity duration-150 ease-in-out hover:opacity-25 md:bottom-[12px] md:h-[71px] md:w-44"
               aria-label="logo"
             >
               <Image
@@ -80,7 +78,7 @@ export default function Header({
               />
             </div>
           </Link>
-          <nav className="header-main-nav">
+          <nav className="header-main-nav ml-auto flex max-md:invisible max-md:hidden">
             {navItems.map((item) => (
               <h1 key={item.href} className="header-nav-item">
                 {item.external ? (
@@ -95,31 +93,33 @@ export default function Header({
           </nav>
           <button
             type="button"
-            className="relative z-10 ml-auto shrink-0 overflow-visible p-2 md:hidden"
+            id="mobile-menu-btn"
+            className={`ml-auto pl-2.5 md:hidden ${menuElevated ? "relative z-10" : ""}`}
             aria-label="mobile-menu-btn"
+            data-menu-open={menuOpen}
             onClick={() => setMenuOpen((open) => !open)}
           >
             <div
-              className="relative flex h-[26px] w-[22px] flex-col justify-center overflow-visible"
+              className="group right-0 mr-0 flex h-5 flex-col"
               aria-label="hamburger-button"
             >
               <div
-                className={`h-[2.5px] w-[22px] shrink-0 bg-black transition-all duration-200 ease-in-out ${
+                className={`my-[2.5px] w-[22px] bg-black pb-0.5 transition duration-200 ease-in-out group-hover:opacity-100 ${
                   menuOpen
-                    ? "translate-y-[2.5px] rotate-45"
-                    : "my-[3px]"
+                    ? "translate-y-[2.5px] rotate-45 transform"
+                    : ""
                 }`}
               />
               <div
-                className={`h-[2.5px] w-[22px] shrink-0 bg-black transition-all duration-200 ease-in-out ${
-                  menuOpen ? "opacity-0" : "my-[3px] opacity-100"
+                className={`my-[2.5px] w-[22px] bg-black pb-0.5 transition duration-200 ease-in-out group-hover:opacity-100 ${
+                  menuOpen ? "opacity-0" : ""
                 }`}
               />
               <div
-                className={`h-[2.5px] w-[22px] shrink-0 bg-black transition-all duration-200 ease-in-out ${
+                className={`my-[2.5px] w-[22px] bg-black pb-0.5 transition duration-200 ease-in-out group-hover:opacity-100 ${
                   menuOpen
-                    ? "-translate-y-[2.5px] -rotate-45"
-                    : "my-[3px]"
+                    ? "-translate-y-[2.5px] -rotate-45 transform"
+                    : ""
                 }`}
               />
             </div>

@@ -1,7 +1,7 @@
 import type { AdviceArticleDetail } from "lib/advice-article";
 import {
-  fetchDatoAdviceDetail,
-  isDatoCmsConfigured,
+    fetchDatoAdviceDetail,
+    isDatoCmsConfigured,
 } from "lib/cms/demo-store-advice";
 import { fetchShopifyArticleDetail } from "lib/shopify-advice";
 import type { Article } from "lib/shopify/types";
@@ -24,8 +24,7 @@ export async function getAdviceDetail(
   slug: string,
 ): Promise<AdviceArticleDetail | null> {
   if (isDatoCmsConfigured()) {
-    const detail = await fetchDatoAdviceDetail(slug);
-    if (detail) return detail;
+    return fetchDatoAdviceDetail(slug);
   }
 
   const article = await fetchShopifyArticleDetail("advice", slug);

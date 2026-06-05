@@ -4,10 +4,11 @@ import CategoryNav from "components/store/category-nav";
 import Footer from "components/store/collections/footer";
 import Logo from "components/store/logo";
 import ProductPageAddToCart from "components/store/product-page-add-to-cart";
+import clsx from "clsx";
 import type { Product } from "lib/shopify/types";
 import Image from "next/image";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState, type UIEvent } from "react";
 
 export type ProductPageImage = {
   src: string;
@@ -94,7 +95,7 @@ function ProductHeader({
       <h3
         aria-label="product-price"
         {...(withIds ? { id: "product-price" } : {})}
-        className="mt-2 text-[15px] font-bold"
+        className="mt-0 text-[15px] font-bold"
       >
         <span>{price}</span>
       </h3>
@@ -117,18 +118,39 @@ export default function ProductPageClient({
   const [selectedVariantId, setSelectedVariantId] = useState(
     variants[0]?.id ?? "",
   );
-  const carouselRef = useRef<HTMLDivElement>(null);
+  const mobileCarouselRef = useRef<HTMLDivElement>(null);
+  const desktopCarouselRef = useRef<HTMLDivElement>(null);
   const [galleryMode, setGalleryMode] = useState(false);
-  
+
   const selectedVariant =
     variants.find((variant) => variant.id === selectedVariantId) ?? variants[0];
+  const hasAnyVariantAvailable = product.variants.some(
+    (variant) => variant.availableForSale,
+  );
+
+  const getActiveCarousel = () => {
+    if (typeof window === "undefined") {
+      return desktopCarouselRef.current;
+    }
+    return window.matchMedia("(max-width: 767px)").matches
+      ? mobileCarouselRef.current
+      : desktopCarouselRef.current;
+  };
+
+  const handleCarouselScroll = (event: UIEvent<HTMLDivElement>) => {
+    const container = event.currentTarget;
+    const index = Math.round(container.scrollLeft / container.clientWidth);
+    if (index !== selectedImage) {
+      setSelectedImage(index);
+    }
+  };
 
   const scrollToImage = (index: number) => {
     if (images.length === 0) return;
 
     const nextIndex = ((index % images.length) + images.length) % images.length;
     setSelectedImage(nextIndex);
-    const container = carouselRef.current;
+    const container = getActiveCarousel();
     if (container) {
       container.scrollTo({
         left: nextIndex * container.clientWidth,
@@ -137,11 +159,27 @@ export default function ProductPageClient({
     }
   };
 
+  useEffect(() => {
+    if (!galleryMode) return;
+    const container = mobileCarouselRef.current;
+    if (!container) return;
+    container.scrollTo({
+      left: selectedImage * container.clientWidth,
+      behavior: "auto",
+    });
+    // Sync scroll position only when gallery opens
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- selectedImage read at open time
+  }, [galleryMode]);
+
   return (
     <>
-      <Logo onMenuOpenChange={setMenuOpen} />
+      <Logo
+        onMenuOpenChange={setMenuOpen}
+        productGalleryOpen={galleryMode}
+        onProductGalleryClose={() => setGalleryMode(false)}
+      />
       {/* <div className="mx-auto h-screen w-full max-w-[1400px] overflow-hidden bg-white"> */}
-      <div className="mx-auto h-screen w-full max-w-[1400px] overflow-y-auto bg-white">
+      <div className="mx-auto h-screen sm:mt-0 mt-3 sm:mb-5 mb-0 w-full max-w-[1400px] overflow-y-auto bg-white">
       {/* <div className="mx-auto   w-full max-w-352  min-h-0"> */}
         {/* <div className="mx-auto w-full max-w-[1108px] min-h-0"> */}
         <CategoryNav menuOpen={menuOpen} />
@@ -226,16 +264,129 @@ export default function ProductPageClient({
     ${
       galleryMode
         ? "w-full cursor-zoom-out"
-        : "w-[68%] cursor-zoom-in"
+        : "w-[68%] cursor-zoom-in phone:cursor-zoom-in"
     }
   `}
 >
-{!galleryMode ? (
-  <>
-    {/* NORMAL SLIDER */}
+    {/* Mobile: swipe carousel; tap image to open gallery with arrows */}
     <div
       id="slider"
-      className="m-auto mt-0"
+      className={clsx(
+        "m-auto mt-0 hidden phone:block",
+        galleryMode ? "cursor-zoom-out" : "cursor-zoom-in",
+      )}
+      onClick={() =>
+        galleryMode ? setGalleryMode(false) : setGalleryMode(true)
+      }
+    >
+      <div aria-label="product-images-carousel">
+        <div
+          className="nuka-container relative"
+          aria-labelledby="nuka-carousel-heading"
+          tabIndex={0}
+          id="nuka-carousel"
+        >
+          <div className="nuka-slide-container">
+            <div
+              ref={mobileCarouselRef}
+              id="nuka-overflow"
+              data-testid="nuka-overflow"
+              className="nuka-overflow scroll-smooth overflow-x-auto snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              style={{ touchAction: "pan-y" }}
+              onScroll={handleCarouselScroll}
+            >
+              <div
+                id="nuka-wrapper"
+                data-testid="nuka-wrapper"
+                className="nuka-wrapper flex"
+              >
+                {images.map((image, index) => (
+                  <div
+                    key={image.label}
+                    className="w-full shrink-0 basis-full snap-start"
+                  >
+                    <Image
+                      alt={title}
+                      src={image.src}
+                      width={700}
+                      height={700}
+                      unoptimized
+                      sizes="100vw"
+                      priority={index === 0}
+                      loading={index === 0 ? "eager" : "lazy"}
+                      aria-label={image.label}
+                      data-zoom={image.zoom}
+                      className="aspect-square w-full shrink-0 object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {images.length > 1 && galleryMode ? (
+              <div>
+                <button
+                  type="button"
+                  aria-label="left-slide-button"
+                  className="invisible absolute bottom-1/2 left-0 mx-3 cursor-pointer !visible"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    scrollToImage(selectedImage - 1);
+                  }}
+                >
+                  <CarouselArrow direction="left" />
+                </button>
+
+                <button
+                  type="button"
+                  aria-label="right-slide-button"
+                  className="invisible absolute bottom-1/2 right-0 mx-3 cursor-pointer !visible"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    scrollToImage(selectedImage + 1);
+                  }}
+                >
+                  <CarouselArrow direction="right" />
+                </button>
+              </div>
+            ) : null}
+          </div>
+        </div>
+
+        {images.length > 1 && galleryMode ? (
+          <div
+            aria-label="carousel-control-dots"
+            className="flex justify-center gap-1"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {images.map((image, index) => (
+              <button
+                key={`dot-${image.label}`}
+                type="button"
+                aria-label={`slide ${index + 1} bullet`}
+                aria-current={index === selectedImage ? "true" : undefined}
+                className={clsx(
+                  "m-[2.5px] h-1 w-2 cursor-pointer",
+                  index === selectedImage
+                    ? "bg-slate-400 hover:bg-slate-400"
+                    : "bg-slate-200 hover:bg-slate-400",
+                )}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  scrollToImage(index);
+                }}
+              />
+            ))}
+          </div>
+        ) : null}
+      </div>
+    </div>
+
+{!galleryMode ? (
+  <>
+    {/* Desktop: click-to-zoom carousel + thumbnails */}
+    <div
+      className="m-auto mt-0 phone:hidden"
       onClick={() => setGalleryMode(true)}
     >
       <div aria-label="product-images-carousel">
@@ -243,31 +394,17 @@ export default function ProductPageClient({
           className="relative"
           aria-labelledby="nuka-carousel-heading"
           tabIndex={0}
-          id="nuka-carousel"
+          id="nuka-carousel-desktop"
         >
-          
           <div className="relative">
             <div
-              ref={carouselRef}
+              ref={desktopCarouselRef}
               className="grid auto-cols-[100%] grid-flow-col overflow-x-auto scroll-smooth snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
               style={{ touchAction: "pan-y" }}
-              onScroll={(event) => {
-                const container = event.currentTarget;
-
-                const index = Math.round(
-                  container.scrollLeft / container.clientWidth,
-                );
-
-                if (index !== selectedImage) {
-                  setSelectedImage(index);
-                }
-              }}
+              onScroll={handleCarouselScroll}
             >
               {images.map((image, index) => (
-                <div
-                  key={image.label}
-                  className="min-w-0 snap-start"
-                >
+                <div key={image.label} className="min-w-0 snap-start">
                   <Image
                     alt={title}
                     src={image.src}
@@ -290,7 +427,7 @@ export default function ProductPageClient({
                 <button
                   type="button"
                   aria-label="left-slide-button"
-                  className="absolute bottom-1/2 left-0 mx-3 cursor-pointer"
+                  className="invisible absolute bottom-1/2 left-0 mx-3 cursor-pointer !visible"
                   onClick={(e) => {
                     e.stopPropagation();
                     scrollToImage(selectedImage - 1);
@@ -302,7 +439,7 @@ export default function ProductPageClient({
                 <button
                   type="button"
                   aria-label="right-slide-button"
-                  className="absolute bottom-1/2 right-0 mx-3 cursor-pointer"
+                  className="invisible absolute bottom-1/2 right-0 mx-3 cursor-pointer !visible"
                   onClick={(e) => {
                     e.stopPropagation();
                     scrollToImage(selectedImage + 1);
@@ -313,7 +450,6 @@ export default function ProductPageClient({
               </div>
             ) : null}
           </div>
-          
         </div>
       </div>
     </div>
@@ -364,9 +500,9 @@ export default function ProductPageClient({
     ) : null}
   </>
 ) : (
-  /* ZOOM GALLERY */
+  /* ZOOM GALLERY (desktop only) */
   <div
-    className="w-full cursor-zoom-out"
+    className="w-full cursor-zoom-out phone:hidden"
     aria-label="product-images-gallery"
     onClick={() => setGalleryMode(false)}
   >
@@ -468,8 +604,33 @@ export default function ProductPageClient({
       className="phone:hidden"
     />
 
+      {/* DESCRIPTION — mobile: after related products */}
+      {descriptionLines.length > 0 ? (
+      <div
+        id="product-description"
+        aria-label="product-description"
+        className="
+          mt-5
+          w-full
+          select-none
+          text-sm
+          font-normal
+          uppercase
+          leading-5
+
+          phone:order-3
+        "
+      >
+        <ul className="list-disc pl-4">
+          {descriptionLines.map((line) => (
+            <li key={line}>{line}</li>
+          ))}
+        </ul>
+      </div>
+    ) : null}
+
     {/* LINKS — desktop: after price; mobile: after description */}
-    <div className="mt-5 flex flex-col gap-0 phone:order-4">
+    {/* <div className="mt-5 flex flex-col gap-0 phone:order-4">
       <button
         type="button"
         className="text-sm uppercase underline hover:text-gray-300 hover:no-underline"
@@ -484,10 +645,24 @@ export default function ProductPageClient({
       >
         Size Chart
       </button>
-    </div>
+    </div> */}
+<div className="mt-5 flex flex-col gap-0 phone:order-4">
+  <button
+    type="button"
+    className="m-0 p-0 text-left text-sm uppercase underline hover:text-gray-300 hover:no-underline"
+  >
+    Technical Details
+  </button>
 
+  <button
+    type="button"
+    className="m-0 p-0 text-left text-sm uppercase underline hover:text-gray-300 hover:no-underline"
+  >
+    Size Chart
+  </button>
+</div>
     {/* ACTIONS — mobile: first after product image */}
-    {variants.length > 0 ? (
+    {variants.length > 0 && hasAnyVariantAvailable ? (
       <div
         aria-label="product-actions-wrapper"
         className="
@@ -590,34 +765,13 @@ export default function ProductPageClient({
       </div>
     ) : null}
 
-    {/* DESCRIPTION — mobile: after related products */}
-    {descriptionLines.length > 0 ? (
-      <div
-        id="product-description"
-        aria-label="product-description"
-        className="
-          mt-5
-          w-full
-          select-none
-          text-sm
-          font-normal
-          uppercase
-          leading-5
-
-          phone:order-3
-        "
-      >
-        <ul className="list-disc pl-4">
-          {descriptionLines.map((line) => (
-            <li key={line}>{line}</li>
-          ))}
-        </ul>
-      </div>
-    ) : null}
+  
   </div>
 )}
 </div>
-          <Footer />
+          <div className={galleryMode ? "phone:hidden" : undefined}>
+            <Footer />
+          </div>
         </main>
 
       </div>

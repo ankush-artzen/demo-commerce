@@ -1,8 +1,8 @@
-import ShopPage from "../../../../components/store/shop-page";
 import { getAllShops, getShopBySlug } from "lib/cms/datocms";
 import { parseShopAddress, shopGallerySlides } from "lib/cms/shops";
 import { structuredTextToHtml } from "lib/cms/structured-text";
 import { notFound } from "next/navigation";
+import ShopPage from "../../../../components/store/shop-page";
 
 export async function generateStaticParams() {
   try {

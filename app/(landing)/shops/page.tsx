@@ -125,12 +125,12 @@
 //   );
 // }
 
-import Link from "next/link";
-import Footer from "../../../components/store/footer";
-import Header from "../../../components/store/header";
 import { getAllShops, isDatoCmsConfigured } from "lib/cms/datocms";
 import { shopCoverSrc } from "lib/cms/shops";
 import { getLandingPageData } from "lib/get-landing-page";
+import Link from "next/link";
+import Footer from "../../../components/store/footer";
+import Header from "../../../components/store/header";
 
 export default async function Page() {
   const { headerLinks, footerLinks } = await getLandingPageData();

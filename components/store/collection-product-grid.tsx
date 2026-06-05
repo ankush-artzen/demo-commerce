@@ -11,12 +11,14 @@ export default function CollectionProductGrid({
   initialPageInfo,
   filters,
   applyFilters,
+  onFilterClick,
 }: {
   collection: string;
   initialProducts: Product[];
   initialPageInfo: PageInfo;
   filters?: CollectionFilters;
   applyFilters?: (products: Product[], filters: CollectionFilters) => Product[];
+  onFilterClick?: () => void;
 }) {
   const [products, setProducts] = useState(initialProducts);
   const [pageInfo, setPageInfo] = useState(initialPageInfo);
@@ -68,9 +70,12 @@ export default function CollectionProductGrid({
     const root = document.getElementById("mainContent");
     const sentinel = sentinelRef.current;
 
-    if (!root || !sentinel || !pageInfo.hasNextPage) {
+    if (!sentinel || !pageInfo.hasNextPage) {
       return;
     }
+
+    const isPhone = window.matchMedia("(max-width: 767px)").matches;
+    const scrollRoot = isPhone ? null : root;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -78,7 +83,7 @@ export default function CollectionProductGrid({
           loadMore();
         }
       },
-      { root, rootMargin: "400px 0px", threshold: 0 },
+      { root: scrollRoot, rootMargin: "400px 0px", threshold: 0 },
     );
 
     observer.observe(sentinel);
@@ -87,29 +92,52 @@ export default function CollectionProductGrid({
   }, [loadMore, pageInfo.hasNextPage]);
 
   return (
-    <div className="relative">
-      <div
-        aria-label="grid"
-        id="grid"
-        className="grid phone:grid-cols-2 md:grid-cols-5 desktop:grid-cols-6"
-      >
-        {visibleProducts.map((product, index) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-            priority={index < 6}
-          />
-        ))}
+    <>
+      <div className="relative">
+        <div
+          aria-label="grid"
+          id="grid"
+          className="grid phone:grid-cols-2 tablet:grid-cols-5 desktop:grid-cols-6"
+        >
+          {visibleProducts.map((product, index) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              priority={index < 6}
+            />
+          ))}
+        </div>
+
+        {onFilterClick ? (
+          <div
+            id="grid-floating-container"
+            className="pointer-events-none sticky bottom-4 z-50 hidden w-full phone:block"
+          >
+            <div className="flex justify-end pr-4">
+              <div id="grid-floating-content" className="pointer-events-auto">
+                <button
+                  type="button"
+                  aria-label="filter-button"
+                  onClick={onFilterClick}
+                  className="flex h-8 cursor-pointer items-center justify-center whitespace-nowrap border-2 border-black bg-black px-4 text-center text-sm font-bold uppercase text-white hover:bg-white hover:text-black desktop:mb-1 phone:my-0 phone:h-8 phone:py-1 phone:text-base"
+                >
+                  <span className="font-bold">Filter</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
       </div>
 
       <div
         aria-label="infinite-scroll-sentinel"
         ref={sentinelRef}
-        className="flex min-h-0 sm:min-h-24 items-center justify-center py-0 sm:py-10"      >
+        className="flex min-h-24 items-center justify-center py-10"
+      >
         {loading ? (
           <span className="text-sm font-bold uppercase">Loading…</span>
         ) : null}
       </div>
-    </div>
+    </>
   );
 }

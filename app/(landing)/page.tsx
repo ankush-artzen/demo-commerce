@@ -1,6 +1,6 @@
-import { TriFergSvg } from "components/store/tri-ferg-svg";
 import Footer from "components/store/footer";
 import Header from "components/store/header";
+import { TriFergSvg } from "components/store/tri-ferg-svg";
 import { getLandingPageData } from "lib/get-landing-page";
 import Link from "next/link";
 
@@ -9,9 +9,7 @@ export default async function PalaceLandingPage() {
 
   return (
     <>
-      <div className="block sm:hidden">
-        <Header navItems={headerLinks} />
-      </div>
+      <Header navItems={headerLinks} landing />
       <main
         role="main"
         id="mainContent"
@@ -19,10 +17,10 @@ export default async function PalaceLandingPage() {
       >
         <div className="mx-5 flex w-full max-w-5xl">
           <div
-            className="relative flex w-full mt-10 sm:mt-0 flex-1 grow flex-col justify-center px-5 phone:px-0"
+            className="relative flex w-full flex-1 grow flex-col justify-center px-0 md:px-5"
             aria-label="index-view"
           >
-            <nav className="flex flex-row justify-center space-x-10 pt-5 font-bold uppercase phone:flex-col phone:items-center phone:space-x-0 phone:space-y-2 phone:pt-0">
+            <nav className="flex flex-col items-center space-x-0 space-y-2 pt-0 font-bold uppercase justify-center md:flex-row md:space-x-10 md:space-y-0 md:pt-5">
               {triFergNav.map((item) => (
                 <Link
                   key={item.ariaLabel}
@@ -30,7 +28,7 @@ export default async function PalaceLandingPage() {
                   aria-label={item.ariaLabel}
                   target={item.external ? "_blank" : undefined}
                   rel={item.external ? "noopener noreferrer" : undefined}
-                  className={`group relative block w-56 phone:w-24 ${item.fillClass}`}
+                  className={`group relative block w-24 md:w-56 ${item.fillClass}`}
                 >
                   <div
                     className="w-full transition-opacity duration-150 ease-in-out desktop:group-hover:opacity-20"
@@ -38,7 +36,7 @@ export default async function PalaceLandingPage() {
                   >
                     <TriFergSvg />
                   </div>
-                  <h2 className="text-center text-xl phone:mt-2 phone:text-xs md:text-md desktop:absolute desktop:inset-0 desktop:flex desktop:w-full desktop:items-center desktop:justify-center desktop:opacity-0 desktop:transition-opacity desktop:duration-150 desktop:ease-in-out desktop:group-hover:opacity-100">
+                  <h2 className="mt-2 text-center text-xs md:mt-0 md:text-md desktop:absolute desktop:inset-0 desktop:flex desktop:w-full desktop:items-center desktop:justify-center desktop:text-xl desktop:opacity-0 desktop:transition-opacity desktop:duration-150 desktop:ease-in-out desktop:group-hover:opacity-100">
                     {item.title}
                   </h2>
                 </Link>
@@ -47,9 +45,7 @@ export default async function PalaceLandingPage() {
           </div>
         </div>
       </main>
-      <div className="mt-15.5 sm:mt-0">
-        <Footer links={footerLinks} />
-      </div>
+      <Footer links={footerLinks} />
     </>
   );
 }

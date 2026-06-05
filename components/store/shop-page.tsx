@@ -1,5 +1,5 @@
 import type { ShopGalleryImage } from "lib/cms/shops";
-import { Footer2 } from "./footer";
+import Footer from "./footer";
 import Header from "./header";
 import ShopGalleryCarousel from "./shop-gallery-carousel";
 
@@ -28,7 +28,7 @@ export default function ShopPage({
         <div className="mx-5 flex w-full max-w-5xl">
           <div className="w-full font-bold uppercase" aria-label="shop-view">
             <div className="flex justify-between px-16 pb-6 phone:px-0">
-              <div className="text-xl phone:text-md">{name}</div>
+              <div className="sm:text-[17.6px] text-[20px]">{name}</div>
 
               <div className="text-sm phone:text-xs">
                 <div>
@@ -55,7 +55,7 @@ export default function ShopPage({
         </div>
       </div>
 
-      <Footer2 />
+      <Footer />
     </main>
   );
 }

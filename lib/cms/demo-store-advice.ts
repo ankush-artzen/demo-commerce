@@ -1,10 +1,10 @@
 import type { AdviceArticleDetail } from "lib/advice-article";
 import type { AdviceFeedItem, AdviceFeedResponse } from "lib/advice-types";
 import {
-  getAllDemoStores,
-  getDemoStoreBySlug,
+  getAllArticles,
+  getArticleBySlug,
   isDatoCmsConfigured,
-  type DatoDemoStoreRecord,
+  type DatoArticleRecord,
   type DatoResponsiveImage,
 } from "lib/cms/datocms";
 import { structuredTextToHtml } from "lib/cms/structured-text";
@@ -12,7 +12,7 @@ import { structuredTextToHtml } from "lib/cms/structured-text";
 export { isDatoCmsConfigured };
 
 function firstImage(
-  record: DatoDemoStoreRecord,
+  record: DatoArticleRecord,
 ): DatoResponsiveImage | null {
   for (const item of record.images) {
     if (item.responsiveImage) return item.responsiveImage;
@@ -20,7 +20,7 @@ function firstImage(
   return null;
 }
 
-function recordToFeedItem(record: DatoDemoStoreRecord): AdviceFeedItem | null {
+function recordToFeedItem(record: DatoArticleRecord): AdviceFeedItem | null {
   const image = firstImage(record);
   if (!image) return null;
 
@@ -43,8 +43,8 @@ function recordToFeedItem(record: DatoDemoStoreRecord): AdviceFeedItem | null {
 }
 
 function sortByNewest(
-  records: DatoDemoStoreRecord[],
-): DatoDemoStoreRecord[] {
+  records: DatoArticleRecord[],
+): DatoArticleRecord[] {
   return [...records].sort((a, b) => {
     const aTime = a.updatedAt ? Date.parse(a.updatedAt) : 0;
     const bTime = b.updatedAt ? Date.parse(b.updatedAt) : 0;
@@ -53,7 +53,7 @@ function sortByNewest(
 }
 
 export async function fetchDatoAdviceFeed(): Promise<AdviceFeedResponse> {
-  const records = sortByNewest(await getAllDemoStores());
+  const records = sortByNewest(await getAllArticles());
   const adviceFeed = records.flatMap((record) => {
     const item = recordToFeedItem(record);
     return item ? [item] : [];
@@ -73,7 +73,7 @@ export async function fetchDatoAdviceFeed(): Promise<AdviceFeedResponse> {
 export async function fetchDatoAdviceBySlug(
   slug: string,
 ): Promise<AdviceFeedItem | undefined> {
-  const record = await getDemoStoreBySlug(slug);
+  const record = await getArticleBySlug(slug);
   if (!record) return undefined;
   return recordToFeedItem(record) ?? undefined;
 }
@@ -81,13 +81,14 @@ export async function fetchDatoAdviceBySlug(
 export async function fetchDatoAdviceDetail(
   slug: string,
 ): Promise<AdviceArticleDetail | null> {
-  const record = await getDemoStoreBySlug(slug);
+  const record = await getArticleBySlug(slug);
   if (!record) return null;
 
   const hero = firstImage(record);
   const contentHtml = structuredTextToHtml(
     record.textDescriptionField?.value,
   );
+  const info = record.info?.trim() || undefined;
 
   const galleryImages = record.images.flatMap((item) => {
     const image = item.responsiveImage;
@@ -107,6 +108,7 @@ export async function fetchDatoAdviceDetail(
     image: hero
       ? { url: hero.src, altText: record.title }
       : undefined,
+    info,
     contentHtml,
     youtubeVideoId: record.youtubeVideoId,
     galleryImages,

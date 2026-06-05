@@ -1,6 +1,7 @@
-import { GraphQLClient, gql } from "graphql-request";
+import { gql } from "graphql-request";
 
 const endpoint = "https://graphql.datocms.com/";
+const DATO_CACHE_TAG = "datocms";
 
 export type DatoResponsiveImage = {
   src: string;
@@ -18,23 +19,25 @@ export type DatoStructuredTextValue = {
   };
 };
 
-export type DatoDemoStoreRecord = {
+export type DatoArticleRecord = {
   id: string;
   title: string;
   slug: string;
   updatedAt: string | null;
   youtubeVideoId: string | null;
+  info: string | null;
   textDescriptionField: { value: DatoStructuredTextValue } | null;
   images: Array<{ responsiveImage: DatoResponsiveImage | null }>;
 };
 
-const demoStoreFields = gql`
-  fragment DemoStoreFields on DemoStoreRecord {
+const articleFields = gql`
+  fragment ArticleFields on ArticleRecord {
     id
     title
     slug
     updatedAt: _updatedAt
     youtubeVideoId
+    info
     textDescriptionField {
       value
     }
@@ -50,57 +53,90 @@ const demoStoreFields = gql`
   }
 `;
 
-export function getDatoClient() {
+export function isDatoCmsConfigured(): boolean {
+  return Boolean(process.env.DATOCMS_API_TOKEN?.trim());
+}
+
+export function datoCacheTag(): string {
+  return DATO_CACHE_TAG;
+}
+
+function datoFetchOptions(): RequestInit {
+  return { cache: "no-store" };
+}
+
+export async function datoRequest<T>(
+  query: string,
+  variables?: Record<string, unknown>,
+): Promise<T> {
   const token = process.env.DATOCMS_API_TOKEN?.trim();
   if (!token) {
     throw new Error("DATOCMS_API_TOKEN is not configured");
   }
 
-  return new GraphQLClient(endpoint, {
+  const response = await fetch(endpoint, {
+    method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+      "X-Cache-Tags": "true",
     },
+    body: JSON.stringify({ query, variables }),
+    ...datoFetchOptions(),
   });
+
+  if (!response.ok) {
+    throw new Error(`DatoCMS request failed: ${response.status}`);
+  }
+
+  const json = (await response.json()) as {
+    data?: T;
+    errors?: Array<{ extensions?: { code?: string }; message?: string }>;
+  };
+
+  if (json.errors?.length) {
+    const error = new Error("DatoCMS GraphQL error");
+    (error as { response?: unknown }).response = { errors: json.errors };
+    throw error;
+  }
+
+  return json.data as T;
 }
 
-export function isDatoCmsConfigured(): boolean {
-  return Boolean(process.env.DATOCMS_API_TOKEN?.trim());
-}
-
-export async function getAllDemoStores(): Promise<DatoDemoStoreRecord[]> {
+export async function getAllArticles(): Promise<DatoArticleRecord[]> {
   const query = gql`
-    ${demoStoreFields}
-    query AllDemoStores {
-      allDemoStores {
-        ...DemoStoreFields
+    ${articleFields}
+    query AllArticles {
+      allArticles {
+        ...ArticleFields
       }
     }
   `;
 
-  const data = await getDatoClient().request<{
-    allDemoStores: DatoDemoStoreRecord[];
+  const data = await datoRequest<{
+    allArticles: DatoArticleRecord[];
   }>(query);
 
-  return data.allDemoStores;
+  return data.allArticles;
 }
 
-export async function getDemoStoreBySlug(
+export async function getArticleBySlug(
   slug: string,
-): Promise<DatoDemoStoreRecord | null> {
+): Promise<DatoArticleRecord | null> {
   const query = gql`
-    ${demoStoreFields}
-    query DemoStore($slug: String!) {
-      demoStore(filter: { slug: { eq: $slug } }) {
-        ...DemoStoreFields
+    ${articleFields}
+    query Article($slug: String!) {
+      article(filter: { slug: { eq: $slug } }) {
+        ...ArticleFields
       }
     }
   `;
 
-  const data = await getDatoClient().request<{
-    demoStore: DatoDemoStoreRecord | null;
+  const data = await datoRequest<{
+    article: DatoArticleRecord | null;
   }>(query, { slug });
 
-  return data.demoStore;
+  return data.article;
 }
 
 export type DatoShopRecord = {
@@ -176,7 +212,7 @@ export async function getAllShops(): Promise<DatoShopRecord[]> {
     }
   `;
 
-  const data = await getDatoClient().request<{
+  const data = await datoRequest<{
     allShops: DatoShopRecordRaw[];
   }>(query);
 
@@ -195,7 +231,7 @@ export async function getShopBySlug(
     }
   `;
 
-  const data = await getDatoClient().request<{
+  const data = await datoRequest<{
     shop: DatoShopRecordRaw | null;
   }>(query, { slug });
 

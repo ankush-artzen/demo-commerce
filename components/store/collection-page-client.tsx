@@ -8,10 +8,14 @@ import Logo from "components/store/logo";
 import type { PageInfo, Product } from "lib/shopify/types";
 import {
   applyCollectionFilters,
+  areCollectionFiltersEqual,
+  collectionFiltersFromSearchParams,
   defaultCollectionFilters,
+  searchParamsFromCollectionFilters,
   type CollectionFilters,
 } from "lib/store/collection-filters";
-import { useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function CollectionPageClient({
   collection,
@@ -22,10 +26,55 @@ export default function CollectionPageClient({
   initialProducts: Product[];
   initialPageInfo: PageInfo;
 }) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
-  const [filters, setFilters] = useState<CollectionFilters>(
-    defaultCollectionFilters,
+  const [filters, setFiltersState] = useState<CollectionFilters>(() =>
+    collectionFiltersFromSearchParams(searchParams),
+  );
+  const skipUrlSyncRef = useRef(false);
+
+  useEffect(() => {
+    const fromUrl = collectionFiltersFromSearchParams(searchParams);
+    setFiltersState((current) => {
+      if (areCollectionFiltersEqual(current, fromUrl)) {
+        return current;
+      }
+      skipUrlSyncRef.current = true;
+      return fromUrl;
+    });
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (skipUrlSyncRef.current) {
+      skipUrlSyncRef.current = false;
+      return;
+    }
+
+    const fromUrl = collectionFiltersFromSearchParams(searchParams);
+    if (areCollectionFiltersEqual(filters, fromUrl)) {
+      return;
+    }
+
+    const params = searchParamsFromCollectionFilters(filters);
+    const query = params.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+  }, [filters, pathname, router, searchParams]);
+
+  const setFilters = useCallback(
+    (
+      updater:
+        | CollectionFilters
+        | ((current: CollectionFilters) => CollectionFilters),
+    ) => {
+      setFiltersState((current) =>
+        typeof updater === "function" ? updater(current) : updater,
+      );
+    },
+    [],
   );
 
   const hasActiveFilters = !filters.showSoldOut || filters.sizes.length > 0;
@@ -37,7 +86,7 @@ export default function CollectionPageClient({
   return (
     <>
       <Logo onMenuOpenChange={setMenuOpen} />
-      <div className="mx-auto w-full max-w-[1400px] mt-0 sm:mt-3 overflow-hidden bg-white min-h-0">      {/* <div className="mx-auto w-full max-w-352 min-h-0"> */}
+      <div className="mx-auto w-full max-w-[1400px] mt-0 sm:mt-3 overflow-hidden bg-white min-h-0 phone:overflow-visible">
         <CategoryNav
           menuOpen={menuOpen}
           activeCollection={collection}
@@ -74,13 +123,17 @@ export default function CollectionPageClient({
               No products available. Check Shopify configuration.
             </p>
           ) : (
-            <CollectionProductGrid
-              collection={collection}
-              initialProducts={initialProducts}
-              initialPageInfo={initialPageInfo}
-              filters={filters}
-              applyFilters={applyCollectionFilters}
-            />
+            <>
+              <div className="h-px w-full" />
+              <CollectionProductGrid
+                collection={collection}
+                initialProducts={initialProducts}
+                initialPageInfo={initialPageInfo}
+                filters={filters}
+                applyFilters={applyCollectionFilters}
+                onFilterClick={() => setFilterOpen(true)}
+              />
+            </>
           )}
         </main>
 
