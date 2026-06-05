@@ -48,11 +48,9 @@ export default function Logo({
   const [menuOpen, setMenuOpen] = useState(false);
 
   const toggleMenu = () => {
-    setMenuOpen((open) => {
-      const next = !open;
-      onMenuOpenChange?.(next);
-      return next;
-    });
+    const next = !menuOpen;
+    setMenuOpen(next);
+    onMenuOpenChange?.(next);
   };
   const [marks, setMarks] = useState(() => [...TRI_FERG_MARKS]);
 
@@ -119,7 +117,7 @@ export default function Logo({
               />
             </div>
           </button> */}
-          {productGalleryOpen ? (
+          {/* {productGalleryOpen ? (
             <button
               type="button"
               className="ml-auto pr-5 text-[2rem] font-light leading-none tablet:invisible tablet:hidden desktop:invisible desktop:hidden"
@@ -128,7 +126,33 @@ export default function Logo({
             >
               ×
             </button>
-          ) : (
+          )  */}
+      {productGalleryOpen ? (
+  <button
+    type="button"
+    className="ml-auto pl-2.5 tablet:invisible tablet:hidden desktop:invisible desktop:hidden"
+    aria-label="close-product-gallery"
+    onClick={onProductGalleryClose}
+  >
+    <div
+      className="group right-0 mr-5 flex h-5 flex-col"
+      aria-label="close-button"
+    >
+      <div
+        className="my-[2.5px] w-[22px] bg-black pb-0.5 transition ease-in-out duration-200 transform translate-y-[5.5px] rotate-45"
+      />
+
+      <div
+        className="my-[2.5px] w-[22px] bg-black pb-0.5 opacity-0 transition ease-in-out duration-200"
+      />
+
+      <div
+        className="my-[2.5px] w-[22px] bg-black pb-0.5 transition ease-in-out duration-200 transform -translate-y-[8.5px] -rotate-45"
+      />
+    </div>
+  </button>
+) : (
+     
             <button
               type="button"
               className="ml-auto pl-2.5 tablet:invisible tablet:hidden desktop:invisible desktop:hidden"
@@ -144,7 +168,7 @@ export default function Logo({
                 <div
                   className={`my-[2.5px] w-[22px] bg-black pb-0.5 transition ease-in-out duration-200 transform ${
                     menuOpen
-                      ? "translate-y-2 rotate-45 group-hover:opacity-100"
+                      ? "translate-y-[5.5px] rotate-45 group-hover:opacity-100"
                       : "group-hover:opacity-100"
                   }`}
                 />
@@ -158,7 +182,7 @@ export default function Logo({
                 <div
                   className={`my-[2.5px] w-[22px] bg-black pb-0.5 transition ease-in-out duration-200 transform ${
                     menuOpen
-                      ? "-translate-y-2 -rotate-45 group-hover:opacity-100"
+                      ? "-translate-y-[8.5px] -rotate-45 group-hover:opacity-100"
                       : "group-hover:opacity-100"
                   }`}
                 />

@@ -106,7 +106,7 @@ export default function Header({
               <div
                 className={`my-[2.5px] w-[22px] bg-black pb-0.5 transition duration-200 ease-in-out group-hover:opacity-100 ${
                   menuOpen
-                    ? "translate-y-[6.5px] rotate-45 transform"
+                    ? "translate-y-[5.5px] rotate-45 transform"
                     : ""
                 }`}
               />
@@ -118,7 +118,7 @@ export default function Header({
               <div
                 className={`my-[2.5px] w-[22px] bg-black pb-0.5 transition duration-200 ease-in-out group-hover:opacity-100 ${
                   menuOpen
-                    ? "-translate-y-[6.5px] -rotate-45 transform"
+                    ? "-translate-y-[8.5px] -rotate-45 transform"
                     : ""
                 }`}
               />
