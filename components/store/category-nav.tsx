@@ -8,12 +8,10 @@ export default function CategoryNav({
   menuOpen = false,
   activeCollection,
   onFilterClick,
-  hasActiveFilters = false,
 }: {
   menuOpen?: boolean;
   activeCollection?: string;
   onFilterClick?: () => void;
-  hasActiveFilters?: boolean;
 }) {
   const { cart } = useCart();
   const showCart = (cart?.totalQuantity ?? 0) > 0;
@@ -66,9 +64,7 @@ export default function CategoryNav({
               type="button"
               aria-label="filter-button"
               onClick={onFilterClick}
-              className={`block w-full cursor-pointer text-right text-sm font-bold uppercase leading-[18px] no-underline transition duration-150 ease-in-out hover:text-amber-500 ${
-                hasActiveFilters ? "text-amber-500" : "text-black"
-              }`}
+              className="block w-full cursor-pointer text-right text-sm font-bold uppercase leading-[18px] text-black no-underline transition duration-150 ease-in-out hover:text-amber-500"
             >
               Filter
             </button>

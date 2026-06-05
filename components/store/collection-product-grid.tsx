@@ -3,7 +3,14 @@
 import ProductCard from "components/store/product-card";
 import type { PageInfo, Product, ProductsPage } from "lib/shopify/types";
 import type { CollectionFilters } from "lib/store/collection-filters";
+import { decodePaginationCursor } from "lib/store/collection-pagination";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
+function logCollectionAll(event: string, data: Record<string, unknown>) {
+  console.groupCollapsed(`[collections/all] ${event}`);
+  console.log(data);
+  console.groupEnd();
+}
 
 export default function CollectionProductGrid({
   collection,
@@ -12,6 +19,8 @@ export default function CollectionProductGrid({
   filters,
   applyFilters,
   onFilterClick,
+  paginationCursor,
+  onPaginationChange,
 }: {
   collection: string;
   initialProducts: Product[];
@@ -19,12 +28,16 @@ export default function CollectionProductGrid({
   filters?: CollectionFilters;
   applyFilters?: (products: Product[], filters: CollectionFilters) => Product[];
   onFilterClick?: () => void;
+  paginationCursor?: string | null;
+  onPaginationChange?: (cursor: string | null) => void;
 }) {
   const [products, setProducts] = useState(initialProducts);
   const [pageInfo, setPageInfo] = useState(initialPageInfo);
   const [loading, setLoading] = useState(false);
   const loadingRef = useRef(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
+  const collectionRef = useRef(collection);
+  const isAllCollection = collection === "all";
 
   const visibleProducts = useMemo(() => {
     if (!filters || !applyFilters) {
@@ -33,22 +46,70 @@ export default function CollectionProductGrid({
     return applyFilters(products, filters);
   }, [products, filters, applyFilters]);
 
+  useEffect(() => {
+    if (collectionRef.current !== collection) {
+      collectionRef.current = collection;
+      setProducts(initialProducts);
+      setPageInfo(initialPageInfo);
+      return;
+    }
+
+    if (!paginationCursor) {
+      setProducts(initialProducts);
+      setPageInfo(initialPageInfo);
+    }
+  }, [collection, initialProducts, initialPageInfo, paginationCursor]);
+
+  useEffect(() => {
+    if (!isAllCollection) {
+      return;
+    }
+
+    logCollectionAll("initial load", {
+      productCount: initialProducts.length,
+      displayedProducts: products.length,
+      hasNextPage: initialPageInfo.hasNextPage,
+      pageEndCursor: decodePaginationCursor(initialPageInfo.endCursor),
+      urlCursor: decodePaginationCursor(paginationCursor ?? null),
+      cursorInSync:
+        !paginationCursor || paginationCursor === initialPageInfo.endCursor,
+    });
+  }, [
+    initialPageInfo,
+    initialProducts.length,
+    isAllCollection,
+    paginationCursor,
+    products.length,
+  ]);
+
   const loadMore = useCallback(async () => {
     if (!pageInfo.hasNextPage || !pageInfo.endCursor || loadingRef.current) {
       return;
     }
 
+    const cursor = pageInfo.endCursor;
     loadingRef.current = true;
     setLoading(true);
 
-    try {
-      const params = new URLSearchParams({
-        collection,
-        cursor: pageInfo.endCursor,
+    const apiUrl = `/api/collections/products?${new URLSearchParams({
+      collection,
+      cursor,
+    })}`;
+
+    if (isAllCollection) {
+      logCollectionAll("fetch start", {
+        apiUrl,
+        requestCursor: decodePaginationCursor(cursor),
       });
-      const response = await fetch(`/api/collections/products?${params}`);
+    }
+
+    try {
+      const response = await fetch(apiUrl);
 
       if (!response.ok) {
+        if (isAllCollection) {
+          console.warn("[collections/all] fetch failed", response.status, apiUrl);
+        }
         return;
       }
 
@@ -57,38 +118,88 @@ export default function CollectionProductGrid({
       setProducts((current) => {
         const seen = new Set(current.map((product) => product.id));
         const next = data.products.filter((product) => !seen.has(product.id));
-        return [...current, ...next];
+        const merged = [...current, ...next];
+
+        if (isAllCollection) {
+          console.groupCollapsed("[collections/all] api response");
+          console.log("summary", {
+            fetched: data.products.length,
+            added: next.length,
+            duplicatesSkipped: data.products.length - next.length,
+            totalDisplayed: merged.length,
+            hasNextPage: data.pageInfo.hasNextPage,
+            nextCursor: decodePaginationCursor(data.pageInfo.endCursor),
+            firstAdded: next[0]?.title ?? null,
+            lastAdded: next.at(-1)?.title ?? null,
+          });
+          console.log("pageInfo", data.pageInfo);
+          console.log("products", data.products);
+          console.groupEnd();
+        }
+
+        return merged;
       });
       setPageInfo(data.pageInfo);
+      onPaginationChange?.(cursor);
     } finally {
       loadingRef.current = false;
       setLoading(false);
     }
-  }, [collection, pageInfo.endCursor, pageInfo.hasNextPage]);
+  }, [
+    collection,
+    isAllCollection,
+    onPaginationChange,
+    pageInfo.endCursor,
+    pageInfo.hasNextPage,
+  ]);
 
   useEffect(() => {
-    const root = document.getElementById("mainContent");
     const sentinel = sentinelRef.current;
 
     if (!sentinel || !pageInfo.hasNextPage) {
       return;
     }
 
-    const isPhone = window.matchMedia("(max-width: 767px)").matches;
-    const scrollRoot = isPhone ? null : root;
+    const mediaQuery = window.matchMedia("(max-width: 767px)");
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]?.isIntersecting) {
-          loadMore();
-        }
-      },
-      { root: scrollRoot, rootMargin: "400px 0px", threshold: 0 },
-    );
+    const getScrollRoot = () => {
+      if (mediaQuery.matches) {
+        return null;
+      }
+      return document.getElementById("mainContent");
+    };
 
-    observer.observe(sentinel);
+    let observer: IntersectionObserver | null = null;
 
-    return () => observer.disconnect();
+    const observe = () => {
+      observer?.disconnect();
+      observer = new IntersectionObserver(
+        (entries) => {
+          if (entries[0]?.isIntersecting) {
+            loadMore();
+          }
+        },
+        {
+          root: getScrollRoot(),
+          rootMargin: "400px 0px",
+          threshold: 0,
+        },
+      );
+      observer.observe(sentinel);
+    };
+
+    observe();
+
+    const handleMediaChange = () => {
+      observe();
+    };
+
+    mediaQuery.addEventListener("change", handleMediaChange);
+
+    return () => {
+      mediaQuery.removeEventListener("change", handleMediaChange);
+      observer?.disconnect();
+    };
   }, [loadMore, pageInfo.hasNextPage]);
 
   return (

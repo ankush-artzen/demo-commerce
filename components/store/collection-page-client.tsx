@@ -11,9 +11,14 @@ import {
   areCollectionFiltersEqual,
   collectionFiltersFromSearchParams,
   defaultCollectionFilters,
-  searchParamsFromCollectionFilters,
   type CollectionFilters,
 } from "lib/store/collection-filters";
+import {
+  areCollectionUrlParamsEqual,
+  decodePaginationCursor,
+  paginationCursorFromSearchParams,
+  searchParamsFromCollectionState,
+} from "lib/store/collection-pagination";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -35,17 +40,35 @@ export default function CollectionPageClient({
   const [filters, setFiltersState] = useState<CollectionFilters>(() =>
     collectionFiltersFromSearchParams(searchParams),
   );
+  const [paginationCursor, setPaginationCursor] = useState<string | null>(() =>
+    paginationCursorFromSearchParams(searchParams),
+  );
   const skipUrlSyncRef = useRef(false);
 
   useEffect(() => {
-    const fromUrl = collectionFiltersFromSearchParams(searchParams);
+    const fromUrlFilters = collectionFiltersFromSearchParams(searchParams);
+    const fromUrlCursor = paginationCursorFromSearchParams(searchParams);
+    let changed = false;
+
     setFiltersState((current) => {
-      if (areCollectionFiltersEqual(current, fromUrl)) {
+      if (areCollectionFiltersEqual(current, fromUrlFilters)) {
         return current;
       }
-      skipUrlSyncRef.current = true;
-      return fromUrl;
+      changed = true;
+      return fromUrlFilters;
     });
+
+    setPaginationCursor((current) => {
+      if (current === fromUrlCursor) {
+        return current;
+      }
+      changed = true;
+      return fromUrlCursor;
+    });
+
+    if (changed) {
+      skipUrlSyncRef.current = true;
+    }
   }, [searchParams]);
 
   useEffect(() => {
@@ -54,15 +77,32 @@ export default function CollectionPageClient({
       return;
     }
 
-    const fromUrl = collectionFiltersFromSearchParams(searchParams);
-    if (areCollectionFiltersEqual(filters, fromUrl)) {
+    if (
+      areCollectionUrlParamsEqual(searchParams, filters, paginationCursor)
+    ) {
       return;
     }
 
-    const params = searchParamsFromCollectionFilters(filters);
+    const params = searchParamsFromCollectionState({
+      filters,
+      paginationCursor,
+    });
     const query = params.toString();
-    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
-  }, [filters, pathname, router, searchParams]);
+    const nextUrl = query ? `${pathname}?${query}` : pathname;
+
+    if (collection === "all") {
+      console.groupCollapsed("[collections/all] url updated");
+      console.log({
+        direction: paginationCursor ? "next" : null,
+        cursor: decodePaginationCursor(paginationCursor),
+        rawCursor: paginationCursor,
+        url: nextUrl,
+      });
+      console.groupEnd();
+    }
+
+    router.replace(nextUrl, { scroll: false });
+  }, [collection, filters, paginationCursor, pathname, router, searchParams]);
 
   const setFilters = useCallback(
     (
@@ -73,11 +113,10 @@ export default function CollectionPageClient({
       setFiltersState((current) =>
         typeof updater === "function" ? updater(current) : updater,
       );
+      setPaginationCursor(null);
     },
     [],
   );
-
-  const hasActiveFilters = !filters.showSoldOut || filters.sizes.length > 0;
 
   const clearFilters = () => {
     setFilters(defaultCollectionFilters);
@@ -86,18 +125,18 @@ export default function CollectionPageClient({
   return (
     <>
       <Logo onMenuOpenChange={setMenuOpen} />
-      <div className="mx-auto w-full max-w-[1400px] mt-0 sm:mt-3 overflow-hidden bg-white min-h-0 phone:overflow-visible">
+      <div className="mx-auto mt-0 min-h-0 w-full max-w-[1400px] overflow-hidden bg-white sm:mt-3 phone:overflow-visible">
         <CategoryNav
           menuOpen={menuOpen}
           activeCollection={collection}
           onFilterClick={() => setFilterOpen(true)}
-          hasActiveFilters={hasActiveFilters}
         />
 
         <main
           role="main"
           id="mainContent"
           className="
+  mt-5
   h-[calc(100vh-130px)]
   min-h-0
   overflow-y-scroll
@@ -108,15 +147,14 @@ export default function CollectionPageClient({
 
   md:w-[75.2%]
 
+  phone:mt-0
   phone:h-auto
   phone:overflow-y-visible
   phone:float-none
-  phone:mt-0
   phone:w-full
   phone:pr-0
   phone:-translate-x-0
 "
-          // className="h-[calc(100vh-130px)] min-h-0 overflow-y-auto mt-5 w-9/12 phone:h-auto phone:overflow-y-visible phone:float-none phone:mt-0 phone:w-full md:w-10/12 phone:-translate-x-0 ease-out duration-300"
         >
           {initialProducts.length === 0 ? (
             <p className="py-10 text-center text-sm font-bold uppercase">
@@ -132,12 +170,13 @@ export default function CollectionPageClient({
                 filters={filters}
                 applyFilters={applyCollectionFilters}
                 onFilterClick={() => setFilterOpen(true)}
+                paginationCursor={paginationCursor}
+                onPaginationChange={setPaginationCursor}
               />
             </>
           )}
+          <Footer />
         </main>
-
-        <Footer />
       </div>
 
       <CollectionFilterModal
