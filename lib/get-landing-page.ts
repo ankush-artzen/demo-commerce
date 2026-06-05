@@ -1,12 +1,12 @@
 import type { AdviceFeedItem } from "lib/advice-types";
 import { getDatoLandingPageContent } from "lib/cms/landing";
-import type {
-  LandingFeaturedContent,
-  LandingLink,
-  LandingPageData,
-  LandingTriFergNavItem,
-} from "lib/landing-types";
 import { getAdviceFeed } from "lib/get-advice-feed";
+import type {
+    LandingFeaturedContent,
+    LandingLink,
+    LandingPageData,
+    LandingTriFergNavItem,
+} from "lib/landing-types";
 import { cache } from "react";
 
 const LATEST_ADVICE_SLOT = 2;

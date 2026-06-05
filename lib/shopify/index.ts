@@ -5,6 +5,7 @@ import {
   TAGS,
 } from "lib/constants";
 import { isShopifyError } from "lib/type-guards";
+import { withCheckoutReturnUrl } from "lib/checkout-url";
 import { ensureStartsWith } from "lib/utils";
 import {
   unstable_cacheLife as cacheLife,
@@ -171,6 +172,7 @@ const reshapeCart = (cart: ShopifyCart): Cart => {
 
   return {
     ...cart,
+    checkoutUrl: withCheckoutReturnUrl(cart.checkoutUrl),
     lines: removeEdgesAndNodes(cart.lines),
   };
 };

@@ -18,7 +18,7 @@ const defaultNavItems: LandingLink[] = [
 ];
 
 const mobileLinkClass =
-  "block py-2 text-sm font-bold leading-4.5 no-underline text-black";
+  "block py-2 text-[14.4px] font-bold leading-4.5 no-underline text-black";
 
 function menuItemTestId(label: string) {
   return `menu-item-${label.toLowerCase()}`;
@@ -106,7 +106,7 @@ export default function Header({
               <div
                 className={`my-[2.5px] w-[22px] bg-black pb-0.5 transition duration-200 ease-in-out group-hover:opacity-100 ${
                   menuOpen
-                    ? "translate-y-[2.5px] rotate-45 transform"
+                    ? "translate-y-[6.5px] rotate-45 transform"
                     : ""
                 }`}
               />
@@ -118,7 +118,7 @@ export default function Header({
               <div
                 className={`my-[2.5px] w-[22px] bg-black pb-0.5 transition duration-200 ease-in-out group-hover:opacity-100 ${
                   menuOpen
-                    ? "-translate-y-[2.5px] -rotate-45 transform"
+                    ? "-translate-y-[6.5px] -rotate-45 transform"
                     : ""
                 }`}
               />
