@@ -132,20 +132,23 @@ export default function CollectionPageClient({
           onFilterClick={() => setFilterOpen(true)}
         />
 
+
+{/* // h-[calc(100vh-130px)] */}
+
         <main
           role="main"
           id="mainContent"
           className="
   mt-5
-  h-[calc(100vh-130px)]
+  sm:mt-0
   min-h-0
   overflow-y-scroll
   w-[73%]
-
+h-[calc(100vh-30px)]
   ease-out
   duration-300
 
-  md:w-[75.2%]
+  md:w-[75%]
 
   phone:mt-0
   phone:h-auto

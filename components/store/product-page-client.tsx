@@ -1,10 +1,10 @@
 "use client";
 
+import clsx from "clsx";
 import CategoryNav from "components/store/category-nav";
 import Footer from "components/store/collections/footer";
 import Logo from "components/store/logo";
 import ProductPageAddToCart from "components/store/product-page-add-to-cart";
-import clsx from "clsx";
 import type { Product } from "lib/shopify/types";
 import Image from "next/image";
 import Link from "next/link";
@@ -40,6 +40,8 @@ export type ProductPageClientProps = {
   images: ProductPageImage[];
   variants: ProductPageVariant[];
   relatedProducts: ProductPageRelated[];
+  /** When set, product links use `/range/[slug]/product/[handle]`. */
+  rangeSlug?: string;
 };
 
 function CarouselArrow({ direction }: { direction: "left" | "right" }) {
@@ -103,6 +105,12 @@ function ProductHeader({
   );
 }
 
+function productHref(handle: string, rangeSlug?: string): string {
+  return rangeSlug
+    ? `/range/${rangeSlug}/product/${handle}`
+    : `/product/${handle}`;
+}
+
 export default function ProductPageClient({
   product,
   productId,
@@ -111,6 +119,7 @@ export default function ProductPageClient({
   images,
   variants,
   relatedProducts,
+  rangeSlug,
 }: ProductPageClientProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(0);
@@ -617,7 +626,7 @@ export default function ProductPageClient({
           font-normal
           uppercase
           leading-5
-
+         sm:leading-[18px]
           phone:order-3
         "
       >
@@ -743,7 +752,7 @@ export default function ProductPageClient({
           {relatedProducts.map((product) => (
             <Link
               key={product.handle}
-              href={`/product/${product.handle}`}
+              href={productHref(product.handle, rangeSlug)}
               aria-label={`product-selector-thumb-${product.handle}`}
               id={`product-selector-thumb-${product.handle}`}
               className={`transition duration-150 ease-in-out hover:cursor-pointer hover:opacity-40 ${

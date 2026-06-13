@@ -105,7 +105,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     );
 
     const paths = ["/advice"];
-    if (slug) paths.push(`/advice/${slug}`);
+    if (slug) {
+      paths.push(`/advice/${slug}`);
+      paths.push(`/range/${slug}`);
+      paths.push(`/range/${slug}/product/${slug}`);
+    }
 
     for (const path of paths) {
       (safeRevalidatePath(path) ? revalidatedPaths : failedPaths).push(path);

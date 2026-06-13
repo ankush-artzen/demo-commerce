@@ -1,5 +1,6 @@
 import type { AdviceFeedItem } from "lib/advice-types";
 import { getDatoLandingPageContent } from "lib/cms/landing";
+import { getAllRanges, isDatoCmsConfigured } from "lib/cms/range";
 import { getAdviceFeed } from "lib/get-advice-feed";
 import type {
     LandingFeaturedContent,
@@ -192,10 +193,40 @@ function triFergFromHeaderLinks(
   }));
 }
 
+async function getRangeHeaderLinks(): Promise<LandingLink[]> {
+  if (!isDatoCmsConfigured()) {
+    return [];
+  }
+
+  try {
+    const ranges = await getAllRanges();
+    return ranges.map((range) => ({
+      label: range.title,
+      href: `/range/${range.slug}`,
+      external: false,
+    }));
+  } catch (error) {
+    if (process.env.NODE_ENV === "development") {
+      console.warn("Failed to fetch ranges from DatoCMS:", error);
+    }
+    return [];
+  }
+}
+
+function withRangeHeaderLinks(links: LandingLink[], rangeLinks: LandingLink[]) {
+  if (rangeLinks.length === 0) {
+    return links;
+  }
+
+  const withoutRanges = links.filter((link) => !link.href.startsWith("/range/"));
+  return [...rangeLinks, ...withoutRanges];
+}
+
 async function loadLandingPageData(): Promise<LandingPageData> {
-  const [cmsLanding, adviceFeed] = await Promise.all([
+  const [cmsLanding, adviceFeed, rangeLinks] = await Promise.all([
     getDatoLandingPageContent(),
     getAdviceFeed(),
+    getRangeHeaderLinks(),
   ]);
 
   console.log("[landing page datoCMS]", { cmsLanding, adviceFeed });
@@ -227,8 +258,10 @@ async function loadLandingPageData(): Promise<LandingPageData> {
     }
   }
 
-  const headerLinks =
-    cmsLanding?.headerLinks.length ? cmsLanding.headerLinks : defaultHeaderLinks;
+  const headerLinks = withRangeHeaderLinks(
+    cmsLanding?.headerLinks.length ? cmsLanding.headerLinks : defaultHeaderLinks,
+    rangeLinks,
+  );
 
   const footerLinks =
     cmsLanding?.footerLinks.length ? cmsLanding.footerLinks : defaultFooterLinks;

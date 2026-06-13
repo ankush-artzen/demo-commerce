@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 function shouldShowStoreCart(pathname: string) {
   return (
     pathname.startsWith("/product/") ||
+    pathname.startsWith("/range/") ||
     pathname.startsWith("/collections/") ||
     pathname === "/cart"
   );

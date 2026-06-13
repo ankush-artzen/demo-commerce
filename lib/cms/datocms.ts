@@ -97,6 +97,12 @@ export async function datoRequest<T>(
   if (json.errors?.length) {
     const error = new Error("DatoCMS GraphQL error");
     (error as { response?: unknown }).response = { errors: json.errors };
+    if (process.env.NODE_ENV === "development") {
+      console.error(
+        "DatoCMS GraphQL error:",
+        JSON.stringify(json.errors, null, 2),
+      );
+    }
     throw error;
   }
 
